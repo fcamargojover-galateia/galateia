@@ -1,24 +1,42 @@
-# GalateIA Timeline 3D - Corkscrew Effect
+# GalateIA - Landing Page Completa
 
-Timeline 3D inmersivo con efecto "sacacorchos" controlado por scroll del usuario, construido con Next.js, React Three Fiber y GSAP.
+Landing page profesional de GalateIA (Sistema Operativo de Retención de Pacientes) con Timeline 3D inmersivo, componentes interactivos y diseño premium.
 
-## 🎯 Características
+## 📋 Estructura de Secciones
 
-- ✅ Efecto 3D de "sacacorchos" sincronizado con scroll
-- ✅ Cámara estática, espiral rotante
-- ✅ Suavizado fluido con `damp()` (como mantequilla)
-- ✅ GSAP ScrollTrigger para control preciso
-- ✅ Matemáticas cilíndricas para posicionamiento de nodos
-- ✅ 60fps en dispositivos modernos
-- ✅ Responsive (desktop y mobile)
-- ✅ Accesibilidad (respeta prefers-reduced-motion)
+```
+1. Nav              - Navegación fija en header
+2. Hero             - Sección principal con métricas
+3. Calculator       - Calculadora dinámica de costo de no-shows
+4. Agents           - 3 agentes operativos con diagrama de red
+5. Timeline3D       - Timeline sacacorchos 3D con GSAP ScrollTrigger
+6. Social           - 4 métricas de prueba social
+7. Pricing          - Comparación de precios (Sin vs Con GalateIA)
+8. FAQ              - Acordeón interactivo con 5 preguntas
+9. FinalCTA         - Llamado a acción final
++ ParticleBackground - Canvas de partículas animadas de fondo
+```
 
-## 🚀 Quick Start
+## 🎨 Paleta de Colores
 
-### Instalación local
+```css
+--cyan: #00fbfb        /* Primario - Acentos y CTAs */
+--dark: #1a1a1d        /* Background oscuro */
+--white: #ffffff       /* Textos principales */
+--red: #ff4444         /* Alertas / Urgencia */
+--green: #00c851       /* Confirmaciones / Recomendación */
+```
+
+## 🔤 Tipografía
+
+- **Titulares**: Syne 800 (Google Fonts)
+- **Cuerpo**: DM Sans 300/400/500 (Google Fonts)
+- **Monospace**: DM Mono (Google Fonts)
+
+## 🚀 Instalación y Ejecución Local
 
 ```bash
-# Clonar el repositorio
+# Clonar repositorio
 git clone https://github.com/fcamargojover-galateia/galateia.git
 cd galateia
 
@@ -29,118 +47,183 @@ npm install
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+Abre [http://localhost:3000](http://localhost:3000)
 
-### Deploy en Vercel (Recomendado)
+## 📦 Dependencias Verificadas
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/fcamargojover-galateia/galateia)
-
-## 📁 Estructura del Proyecto
-
-```
-.
-├── app/
-│   ├── page.tsx                 # Página principal
-│   ├── layout.tsx               # Layout global
-│   ├── globals.css              # Estilos globales
-│   └── components/
-│       ├── TimelineCanvas.tsx   # Canvas R3F wrapper
-│       └── TimelineScene.tsx    # Lógica de la espiral
-├── package.json
-├── tsconfig.json
-├── next.config.js
-└── README.md
+```json
+{
+  "react": "^18.2.0",
+  "react-dom": "^18.2.0",
+  "next": "^14.0.4",
+  "three": "^0.160.0",
+  "@react-three/fiber": "^8.15.12",
+  "@react-three/drei": "^9.92.7",
+  "gsap": "^3.12.0"
+}
 ```
 
-## 🎨 Customización
+## 🏗️ Arquitectura Técnica
 
-### Cambiar número de hitos
+### Stack
+- **Frontend**: Next.js 14 (App Router)
+- **3D**: React Three Fiber 8.15.12 + Three.js 0.160.0
+- **Animaciones**: GSAP 3.12.0 + ScrollTrigger
+- **Estilos**: Tailwind CSS + CSS Variables
+- **Tipografía**: next/font (Google Fonts)
 
-En `app/components/TimelineScene.tsx`:
+### Configuración Crítica
 
+**next.config.js** - Transpilación de Three.js:
+```javascript
+transpilePackages: ['three']
+```
+
+**tsconfig.json** - App Router compatible:
+```json
+{
+  "jsx": "preserve",
+  "moduleResolution": "node",
+  "isolatedModules": true
+}
+```
+
+**app/layout.tsx** - Fuentes de Google:
 ```typescript
-const NODES_COUNT = 6; // De 4 a 6 hitos
+import { Syne, DM_Sans, DM_Mono } from 'next/font/google';
 ```
 
-### Cambiar velocidad de animación
+## 📁 Estructura de Carpetas
 
-En `app/page.tsx`:
-
-```typescript
-scrub: 1, // 0.5 = rápido, 2 = lento
+```
+app/
+├── layout.tsx                          (Root layout + fuentes)
+├── page.tsx                            (Ensamblador de secciones)
+├── globals.css                         (Variables CSS + animaciones)
+├── components/
+│   ├── sections/
+│   │   ├── Nav.tsx                     (Navegación)
+│   │   ├── Hero.tsx                    (Hero + dashboard)
+│   │   ├── Calculator.tsx              (Calculadora interactiva)
+│   │   ├── Agents.tsx                  (3 agentes + diagrama Canvas)
+│   │   ├── Timeline3D.tsx              ('use client' - wrapper)
+│   │   ├── Social.tsx                  (4 métricas)
+│   │   ├── Pricing.tsx                 (Comparación)
+│   │   ├── FAQ.tsx                     (Acordeón)
+│   │   └── FinalCTA.tsx                (CTA final)
+│   ├── 3d/
+│   │   ├── TimelineCanvas.tsx          ('use client' - Canvas R3F)
+│   │   └── TimelineScene.tsx           ('use client' - Escena 3D)
+│   └── ambient/
+│       └── ParticleBackground.tsx      ('use client' - Canvas 2D)
 ```
 
-### Cambiar radio de la espiral
+## ⚙️ Componentes Clave
 
-En `app/components/TimelineScene.tsx`:
+### Timeline3D (`app/components/sections/Timeline3D.tsx`)
+- Wrapper que setup GSAP ScrollTrigger
+- Registra plugin con `gsap.registerPlugin(ScrollTrigger)`
+- Crea referencia para valores de animación (rotation, position)
+- Limpia ScrollTriggers en cleanup de useEffect
 
-```typescript
-const SPIRAL_RADIUS = 6; // Más grande = espiral más amplia
-```
+### TimelineCanvas (`app/components/3d/TimelineCanvas.tsx`)
+- Canvas R3F con position: fixed 100vh
+- PerspectiveCamera estática en [0, 0, 10]
+- 3 luces (ambient + 2 point lights)
+- Props: spiralStateRef
 
-## 📚 Stack Tecnológico
+### TimelineScene (`app/components/3d/TimelineScene.tsx`)
+- Genera 4 nodos en espiral (coordenadas cilíndricas)
+- useFrame para aplicar suavizado (damp) a rotación y posición
+- Html component de Drei para textos 3D
+- Líneas de conexión y nodo central
 
-- **Next.js 14** - Framework React moderno
-- **React Three Fiber** - Renderizado 3D con Three.js
-- **Three.js** - Engine gráfico
-- **GSAP** - Animaciones profesionales
-- **ScrollTrigger** - Control de scroll
-- **Tailwind CSS** - Estilos de utilidad
-- **TypeScript** - Type safety
+### ParticleBackground (`app/components/ambient/ParticleBackground.tsx`)
+- Canvas 2D puro (sin Three.js)
+- 50 partículas que se mueven continuamente
+- Líneas entre partículas cercanas
+- Responsive: redimensiona on window resize
 
-## 🔧 Scripts disponibles
+### Calculator (`app/components/sections/Calculator.tsx`)
+- Estado dinámico con useState
+- Inputs range para citas mensuales y % no-shows
+- Cálculo en tiempo real de costos
+- Diseño con grid y valores destacados
+
+### FAQ (`app/components/sections/FAQ.tsx`)
+- Acordeón controlado con useState
+- 5 preguntas sobre implementación, compatibilidad, seguridad, escalabilidad
+- Open/close toggle con rotación visual
+
+## 🔧 Scripts
 
 ```bash
-npm run dev          # Correr en desarrollo
-npm run build        # Build para producción
-npm start            # Correr el build de producción
-npm run lint         # Lint del código
-npm run type-check   # Verificar tipos TypeScript
+npm run dev              # Next.js dev server (hot reload)
+npm run build            # Build optimizado para producción
+npm start                # Correr build de producción
+npm run lint             # ESLint check
 ```
 
-## 🌐 Deployment
+## 🌐 Deployment en Hostinger VPS
 
-### Vercel (Recomendado)
+### Requisitos
+- Node.js 18+
+- npm o yarn
+- Acceso SSH
 
-1. Push tu código a GitHub
-2. Conecta tu repo en [vercel.com/new](https://vercel.com/new)
-3. Vercel detectará Next.js automáticamente
-4. ¡Listo! Deploy automático en cada push
+### Pasos
+```bash
+# 1. SSH a tu VPS
+ssh usuario@tu-ip-vps
 
-### Otros
+# 2. Clonar repositorio
+cd /home/usuario/public_html
+git clone https://github.com/fcamargojover-galateia/galateia.git
+cd galateia
 
-Para otros servicios que soporten Node.js (Railway, Render, etc.), asegúrate de tener Node.js 18+.
+# 3. Instalar dependencias
+npm install
 
-## 📖 Documentación Completa
+# 4. Build
+npm run build
 
-Consulta los archivos en `/docs`:
-- `ARQUITECTURA.md` - Arquitectura técnica detallada
-- `PERSONALIZACION.md` - Ejemplos avanzados de customización
-- `INSTALACION.md` - Guía paso a paso
+# 5. Iniciar con PM2
+npm install -g pm2
+pm2 start "npm start" --name "galateia"
+pm2 startup
+pm2 save
+
+# 6. Configurar proxy inverso (Nginx)
+# Apuntar puerto 3000 a tu dominio
+```
 
 ## 🐛 Troubleshooting
 
-### "Canvas no aparece"
-- Verifica que el Canvas tenga `position: fixed` y `zIndex`
-- Asegúrate de que no hay elementos cubriendo el canvas
+### Error: "Module not found: 'three'"
+→ Verifica `transpilePackages: ['three']` en next.config.js
 
-### "Scroll no funciona"
-- Verifica que ScrollTrigger esté registrado en page.tsx
-- Confirma que el contenedor tiene altura suficiente (`h-[400vh]`)
+### Canvas no renderiza
+→ Verifica que TimelineCanvas tiene `'use client'` y Canvas tiene `position: fixed, zIndex`
 
-### "Rendimiento bajo"
-- Reduce la densidad de geometrías (menos segmentos)
-- Aumenta el damping factor en useFrame
-- Desactiva post-processing si lo usas
+### ScrollTrigger no funciona
+→ Verifica que se registra con `gsap.registerPlugin(ScrollTrigger)` en useEffect
+
+### Estilos Tailwind no aplican
+→ Verifica que tailwind.config.ts tiene `content: ['./app/**/*.{ts,tsx}']`
+
+## 📚 Recursos
+
+- [Next.js 14 Docs](https://nextjs.org/docs)
+- [React Three Fiber](https://r3f.docs.pmnd.rs/)
+- [GSAP ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/)
+- [Three.js Documentation](https://threejs.org/docs/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
 
 ## 📄 Licencia
 
-MIT
+Propietario de GalateIA
 
-## 👤 Autor
+## 👤 Desarrollado por
 
-**GalateIA** - Firma de automatización e infraestructura operativa
-
----
-
-¿Preguntas? Abre un issue en GitHub o contacta a fcamargojover@gmail.com
+**GalateIA** — Firma de Automatización e Infraestructura Operativa  
+Contacto: fcamargojover@gmail.com
