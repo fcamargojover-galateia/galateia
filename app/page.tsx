@@ -1,55 +1,34 @@
-'use client';
+import Nav from '@components/sections/Nav';
+import Hero from '@components/sections/Hero';
+import Calculator from '@components/sections/Calculator';
+import Agents from '@components/sections/Agents';
+import Timeline3D from '@components/sections/Timeline3D';
+import Social from '@components/sections/Social';
+import Pricing from '@components/sections/Pricing';
+import FAQ from '@components/sections/FAQ';
+import FinalCTA from '@components/sections/FinalCTA';
+import ParticleBackground from '@components/ambient/ParticleBackground';
 
-import { useRef, useEffect } from 'react';
-import TimelineCanvas from '@/components/TimelineCanvas';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
-
-export default function TimelinePage() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const spiralStateRef = useRef({
-    rotation: 0,
-    position: 0,
-  });
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
-
-    // GSAP ScrollTrigger: Mapea el scroll a valores de rotación y posición
-    gsap.to(spiralStateRef.current, {
-      rotation: Math.PI * 4, // 2 vueltas completas = 4π
-      position: 12, // Sube 12 unidades en Y
-      scrollTrigger: {
-        trigger: scrollContainer,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1, // 1 segundo de smoothing
-        markers: false, // Cambia a true para debug
-      },
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
-
+export default function Home() {
   return (
-    <div className="w-full h-full">
-      {/* Canvas fijo en la pantalla */}
-      <TimelineCanvas spiralStateRef={spiralStateRef} />
+    <div className="relative w-full">
+      {/* Background de partículas */}
+      <ParticleBackground />
 
-      {/* Contenedor de scroll para habilitar scrollbar */}
-      <div
-        ref={scrollContainerRef}
-        className="relative w-full h-[400vh] pointer-events-none"
-        style={{
-          // Este div es invisible pero proporciona altura para el scroll
-          background: 'transparent',
-        }}
-      />
+      {/* Navegación fija */}
+      <Nav />
+
+      {/* Secciones */}
+      <main className="relative z-10">
+        <Hero />
+        <Calculator />
+        <Agents />
+        <Timeline3D />
+        <Social />
+        <Pricing />
+        <FAQ />
+        <FinalCTA />
+      </main>
     </div>
   );
 }

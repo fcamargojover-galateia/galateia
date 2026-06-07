@@ -1,9 +1,28 @@
 import type { Metadata } from 'next';
+import { Syne, DM_Sans, DM_Mono } from 'next/font/google';
 import './globals.css';
 
+const syne = Syne({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-syne',
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-dm-sans',
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  variable: '--font-dm-mono',
+});
+
 export const metadata: Metadata = {
-  title: 'GalateIA - Timeline 3D',
-  description: 'Timeline 3D Corkscrew effect - Interactive spiral visualization',
+  title: 'GalateIA - Automatización e Infraestructura Operativa',
+  description: 'Sistema operativo de retención de pacientes con agentes de IA',
   viewport: 'width=device-width, initial-scale=1',
 };
 
@@ -13,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="es" className={`${syne.variable} ${dmSans.variable} ${dmMono.variable}`}>
+      <body className="bg-dark text-white overflow-x-hidden">{children}</body>
     </html>
   );
 }
