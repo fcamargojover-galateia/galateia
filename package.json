@@ -14,7 +14,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "next": "^14.0.0",
-    "three": "^r128",
+    "three": "^0.158.0",
     "@react-three/fiber": "^8.15.0",
     "@react-three/drei": "^9.88.0",
     "gsap": "^3.12.0"
@@ -24,7 +24,7 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@types/three": "^r128",
+    "@types/three": "^0.158.0",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.3.0"
