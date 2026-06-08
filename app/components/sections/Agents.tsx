@@ -4,16 +4,16 @@ import { useEffect, useRef } from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const AGENTS = [
-  { label: 'Atención',    title: 'Agente de Atención',    desc: 'Responde WhatsApp 24/7, cualifica pacientes, agenda automáticamente.',     icon: '💬' },
-  { label: 'Agenda',      title: 'Agente de Agenda',      desc: 'Sincroniza calendarios, evita conflictos, notifica cambios en tiempo real.', icon: '📅' },
-  { label: 'Reactivación',title: 'Agente de Reactivación',desc: 'Identifica pacientes inactivos, personaliza mensajes, cierra ventas upsell.',icon: '🔄' },
+  { label: 'Atención',     title: 'Agente de Atención',     desc: 'Responde WhatsApp 24/7, cualifica pacientes, agenda automáticamente.',      icon: '💬' },
+  { label: 'Agenda',       title: 'Agente de Agenda',       desc: 'Sincroniza calendarios, evita conflictos, notifica cambios en tiempo real.',  icon: '📅' },
+  { label: 'Reactivación', title: 'Agente de Reactivación', desc: 'Identifica pacientes inactivos, personaliza mensajes, cierra ventas upsell.', icon: '🔄' },
 ];
 
 const DELAYS = ['', 'anim-d200', 'anim-d400'];
 
 export default function Agents() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { ref } = useScrollReveal<HTMLElement>();
+  const { ref }   = useScrollReveal<HTMLElement>();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,85 +21,143 @@ export default function Agents() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    let animId: number;
+
     const resize = () => {
       canvas.width  = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
     };
     resize();
 
-    const animate = () => {
+    const animate = (ts: number) => {
+      const t = ts / 1000; // segundos
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
-      const radius = Math.min(cx, cy) * 0.55;
+      const orbit   = Math.min(cx, cy) * 0.72; // radio de la órbita
+      const centralR = 38;
+      const agentR   = 32;
 
-      // Líneas de conexión
-      AGENTS.forEach((_, i) => {
+      // Posiciones de los nodos agente
+      const nodes = AGENTS.map((_, i) => {
         const angle = -Math.PI / 2 + (Math.PI * 2 * i) / 3;
-        const x = cx + radius * Math.cos(angle);
-        const y = cy + radius * Math.sin(angle);
-        ctx.strokeStyle = 'rgba(0,251,251,0.25)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
+        return {
+          x:     cx + orbit * Math.cos(angle),
+          y:     cy + orbit * Math.sin(angle),
+          phase: (Math.PI * 2 * i) / 3,
+        };
+      });
+
+      // ── Líneas de conexión animadas ──────────────────────────────
+      nodes.forEach(({ x, y, phase }) => {
+        const linePulse = Math.sin(t * 1.8 + phase) * 0.5 + 0.5;
+        ctx.strokeStyle = `rgba(0,251,251,${0.18 + linePulse * 0.22})`;
+        ctx.lineWidth   = 1 + linePulse * 0.8;
+        ctx.setLineDash([5, 9]);
+        ctx.lineDashOffset = -((t * 22) % 28);
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(x, y);
         ctx.stroke();
         ctx.setLineDash([]);
+        ctx.lineDashOffset = 0;
       });
 
-      // Nodo central
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 22);
-      grad.addColorStop(0, 'rgba(0,251,251,0.9)');
-      grad.addColorStop(1, 'rgba(0,180,180,0.4)');
-      ctx.fillStyle = grad;
+      // ── Nodo central ─────────────────────────────────────────────
+      const cp = Math.sin(t * 2.2) * 0.5 + 0.5; // pulso central 0-1
+
+      // Halo exterior pulsante
+      const haloR = centralR + 10 + cp * 14;
+      const haloG = ctx.createRadialGradient(cx, cy, centralR * 0.8, cx, cy, haloR);
+      haloG.addColorStop(0, `rgba(0,251,251,${0.18 * cp})`);
+      haloG.addColorStop(1, 'rgba(0,251,251,0)');
+      ctx.fillStyle = haloG;
       ctx.beginPath();
-      ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+      ctx.arc(cx, cy, haloR, 0, Math.PI * 2);
       ctx.fill();
 
-      // Etiqueta nodo central — "GalateIA"
-      ctx.fillStyle = '#1A1A1D';
-      ctx.font = 'bold 11px "DM Mono", monospace';
-      ctx.textAlign = 'center';
+      // Círculo principal
+      const cG = ctx.createRadialGradient(cx, cy - 6, 0, cx, cy, centralR);
+      cG.addColorStop(0, '#00FBFB');
+      cG.addColorStop(0.55, 'rgba(0,220,220,0.88)');
+      cG.addColorStop(1,    'rgba(0,150,150,0.55)');
+      ctx.fillStyle = cG;
+      ctx.beginPath();
+      ctx.arc(cx, cy, centralR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Anillo borde central
+      ctx.strokeStyle = `rgba(255,255,255,${0.4 + cp * 0.3})`;
+      ctx.lineWidth   = 1.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, centralR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Texto "GalateIA"
+      ctx.fillStyle    = '#0d2626';
+      ctx.font         = 'bold 12px "DM Mono", monospace';
+      ctx.textAlign    = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('GalateIA', cx, cy);
 
-      // Nodos de agentes
+      // ── Nodos agente ──────────────────────────────────────────────
       AGENTS.forEach((agent, i) => {
-        const angle = -Math.PI / 2 + (Math.PI * 2 * i) / 3;
-        const x = cx + radius * Math.cos(angle);
-        const y = cy + radius * Math.sin(angle);
+        const { x, y, phase } = nodes[i];
+        const ap = Math.sin(t * 1.6 + phase) * 0.5 + 0.5; // pulso por nodo
+        const r  = agentR + ap * 5; // radio respirante
 
-        // Orbe agente
-        const nodeGrad = ctx.createRadialGradient(x, y, 0, x, y, 28);
-        nodeGrad.addColorStop(0, 'rgba(0,251,251,0.35)');
-        nodeGrad.addColorStop(1, 'rgba(0,251,251,0.06)');
-        ctx.fillStyle = nodeGrad;
+        // Halo exterior pulsante
+        const outerR = r + 14 + ap * 10;
+        const outerG = ctx.createRadialGradient(x, y, r * 0.6, x, y, outerR);
+        outerG.addColorStop(0, `rgba(0,251,251,${0.14 + ap * 0.12})`);
+        outerG.addColorStop(1, 'rgba(0,251,251,0)');
+        ctx.fillStyle = outerG;
         ctx.beginPath();
-        ctx.arc(x, y, 28, 0, Math.PI * 2);
+        ctx.arc(x, y, outerR, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.strokeStyle = 'rgba(0,251,251,0.55)';
-        ctx.lineWidth = 1.5;
+        // Relleno del nodo
+        const nG = ctx.createRadialGradient(x, y - r * 0.25, 0, x, y, r);
+        nG.addColorStop(0,   `rgba(0,251,251,${0.28 + ap * 0.18})`);
+        nG.addColorStop(0.65,`rgba(0,200,200,${0.12 + ap * 0.06})`);
+        nG.addColorStop(1,   'rgba(0,251,251,0.03)');
+        ctx.fillStyle = nG;
         ctx.beginPath();
-        ctx.arc(x, y, 28, 0, Math.PI * 2);
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Borde del nodo
+        ctx.strokeStyle = `rgba(0,251,251,${0.5 + ap * 0.35})`;
+        ctx.lineWidth   = 1.5 + ap * 0.5;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Etiqueta visible del agente
-        ctx.fillStyle = '#00FBFB';
-        ctx.font = 'bold 12px "DM Sans", sans-serif';
-        ctx.textAlign = 'center';
+        // Icono dentro del nodo
+        ctx.font         = `${16 + ap * 2}px sans-serif`;
+        ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(agent.label, x, y);
+        ctx.fillText(agent.icon, x, y);
+
+        // Etiqueta DEBAJO del nodo — blanca, alto contraste
+        ctx.fillStyle    = 'rgba(255,255,255,0.92)';
+        ctx.font         = 'bold 12px "DM Sans", sans-serif';
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(agent.label, x, y + r + 9);
       });
 
-      requestAnimationFrame(animate);
+      animId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animId = requestAnimationFrame(animate);
 
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
   return (
@@ -111,9 +169,7 @@ export default function Agents() {
       {/* Gradiente radial cyan sutil de fondo */}
       <div
         className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,251,251,0.06) 0%, transparent 70%)',
-        }}
+        style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,251,251,0.06) 0%, transparent 70%)' }}
       />
 
       <div className="relative max-w-6xl mx-auto w-full">
@@ -125,8 +181,12 @@ export default function Agents() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Canvas */}
-          <div data-animate="fade-up" className="anim-d100 rounded-lg border border-gray-700 bg-gray-900/50 p-8 h-96">
+          {/* Canvas — altura aumentada para dar espacio al diagrama */}
+          <div
+            data-animate="fade-up"
+            className="anim-d100 rounded-lg border border-gray-700 bg-gray-900/50 p-4"
+            style={{ height: '460px' }}
+          >
             <canvas ref={canvasRef} className="w-full h-full" />
           </div>
 
