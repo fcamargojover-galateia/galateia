@@ -1,6 +1,5 @@
-import type { NextConfig } from 'next'
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
@@ -10,4 +9,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+module.exports = nextConfig
