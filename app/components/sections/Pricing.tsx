@@ -1,13 +1,24 @@
+'use client';
+
+import { useScrollReveal } from '@/hooks/useScrollReveal';
+
 export default function Pricing() {
+  const { ref } = useScrollReveal<HTMLElement>();
+
   return (
-    <section className="py-24 px-8 bg-dark">
+    <section ref={ref} className="py-24 px-8 bg-dark">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-5xl font-bold text-center mb-4">Inversión</h2>
-        <p className="text-center text-gray-400 mb-16">Setup único + retorno mensual garantizado</p>
+
+        <div data-animate="fade-up" className="text-center mb-4">
+          <h2 className="text-5xl font-bold">Inversión</h2>
+        </div>
+        <div data-animate="fade-up" className="anim-d100 text-center mb-16">
+          <p className="text-gray-400">Setup único + retorno mensual garantizado</p>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Sin GalateIA */}
-          <div className="p-8 rounded-lg border border-gray-700 bg-gray-900/50">
+          {/* Sin GalateIA — entra desde la izquierda */}
+          <div data-animate="slide-left" className="p-8 rounded-lg border border-gray-700 bg-gray-900/50">
             <h3 className="text-2xl font-bold mb-6">Sin GalateIA</h3>
             <div className="space-y-4 text-gray-400">
               <div className="flex justify-between">
@@ -29,8 +40,11 @@ export default function Pricing() {
             </div>
           </div>
 
-          {/* Con GalateIA */}
-          <div className="p-8 rounded-lg border border-cyan bg-gradient-to-br from-cyan/10 to-dark">
+          {/* Con GalateIA — entra desde la derecha + glow pulsante */}
+          <div
+            data-animate="slide-right"
+            className="glow-cyan-pulse p-8 rounded-lg border border-cyan bg-gradient-to-br from-cyan/10 to-dark"
+          >
             <div className="inline-block bg-green text-dark px-3 py-1 rounded text-sm font-bold mb-4">RECOMENDADO</div>
             <h3 className="text-2xl font-bold mb-6">Con GalateIA</h3>
             <div className="space-y-4">
@@ -57,6 +71,7 @@ export default function Pricing() {
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
