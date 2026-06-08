@@ -86,14 +86,15 @@ export default function TimelineNode({
     if (isFirst) {
       // TARJETA 1: Zoom fijo, flotando a la izquierda del tubo
       targetScale = 0.5 + nodeProgress * 0.5; // 0.5 → 1.0
-      targetX = -2; // Desplazada a la izquierda del tubo central (X=0)
+      targetX = -2.5; // Izquierda del tubo central (X=0), sin superponerse
       targetZ = 0;
 
-      // Opacity: 0 → 1 durante primer 50%, luego 1 → 0 en segundo 50%
-      if (nodeProgress < 0.5) {
-        targetOpacity = nodeProgress * 2; // 0 → 1
+      // Opacity: 0 → 1 en el primer 60% del rango (más rápido, llega a 1 completo)
+      // luego 1 → 0 en el último 40%
+      if (nodeProgress < 0.6) {
+        targetOpacity = nodeProgress / 0.6; // 0 → 1 (más rápido)
       } else {
-        targetOpacity = 2 - nodeProgress * 2; // 1 → 0
+        targetOpacity = 1 - (nodeProgress - 0.6) / 0.4; // 1 → 0
       }
     } else {
       // TARJETAS 2, 3, 4: Trayectoria cruzada derecha → izquierda
@@ -118,20 +119,21 @@ export default function TimelineNode({
       targetOpacity = startOpacity + (endOpacity - startOpacity) * nodeProgress; // 0.2 → 1
     }
 
-    // Aplicar suavizado (damp)
+    // Aplicar suavizado (damp) — tarjeta 1 más rápida para que el zoom-in se sienta inmediato
+    const dampFactor = isFirst ? 0.35 : 0.15;
     stateRef.current.scale = THREE.MathUtils.damp(
       stateRef.current.scale,
       targetScale,
-      0.15,
+      dampFactor,
       1 / 60
     );
 
-    stateRef.current.x = THREE.MathUtils.damp(stateRef.current.x, targetX, 0.12, 1 / 60);
+    stateRef.current.x = THREE.MathUtils.damp(stateRef.current.x, targetX, isFirst ? 0.35 : 0.12, 1 / 60);
     stateRef.current.z = THREE.MathUtils.damp(stateRef.current.z, targetZ, 0.12, 1 / 60);
     stateRef.current.opacity = THREE.MathUtils.damp(
       stateRef.current.opacity,
       targetOpacity,
-      0.1,
+      isFirst ? 0.3 : 0.1,
       1 / 60
     );
 
@@ -153,30 +155,38 @@ export default function TimelineNode({
 
   const nodeData = timelineData[index] || data;
 
+  // Tarjeta 1 más grande (centrada, zoom-in), tarjetas 2-4 más compactas
+  const cardWidth = isFirst ? '240px' : '160px';
+  const cardPadding = isFirst ? '20px' : '14px';
+  const dayFontSize = isFirst ? '11px' : '9px';
+  const titleFontSize = isFirst ? '18px' : '13px';
+  const descFontSize = isFirst ? '13px' : '11px';
+
   return (
     <group ref={groupRef} position={[0, yPosition, 0]}>
       <Html transform center>
         <div
           ref={htmlDivRef}
           style={{
-            width: '280px',
-            padding: '24px',
-            background: 'rgba(0, 0, 0, 0.8)',
+            width: cardWidth,
+            padding: cardPadding,
+            background: 'rgba(0, 0, 0, 0.85)',
             border: '1px solid rgba(0, 251, 251, 0.4)',
             borderRadius: '8px',
             backdropFilter: 'blur(10px)',
             pointerEvents: 'none',
             opacity: 0.2,
+            boxSizing: 'border-box',
           }}
         >
           <p
             style={{
               fontFamily: 'DM Mono, monospace',
-              fontSize: '11px',
+              fontSize: dayFontSize,
               color: '#00FBFB',
               letterSpacing: '0.2em',
               margin: 0,
-              marginBottom: '8px',
+              marginBottom: '6px',
               textTransform: 'uppercase',
               fontWeight: 'bold',
             }}
@@ -186,10 +196,10 @@ export default function TimelineNode({
           <h3
             style={{
               fontFamily: 'Syne, sans-serif',
-              fontSize: '18px',
+              fontSize: titleFontSize,
               fontWeight: 800,
               color: '#FFFFFF',
-              margin: '8px 0 12px 0',
+              margin: '6px 0 8px 0',
             }}
           >
             {nodeData.title}
@@ -197,9 +207,9 @@ export default function TimelineNode({
           <p
             style={{
               fontFamily: 'DM Sans, sans-serif',
-              fontSize: '13px',
+              fontSize: descFontSize,
               color: 'rgba(255,255,255,0.7)',
-              lineHeight: '1.6',
+              lineHeight: '1.5',
               margin: 0,
             }}
           >

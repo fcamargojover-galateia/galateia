@@ -23,7 +23,7 @@ export default function Timeline3D() {
         duration: 1,
         scrollTrigger: {
           trigger: section,
-          start: 'top top',
+          start: 'top 80%', // Se activa cuando la sección entra al viewport desde abajo
           end: 'bottom bottom',
           scrub: true, // Reversible con scroll
           onUpdate: (self) => {
