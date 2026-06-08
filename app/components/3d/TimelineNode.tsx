@@ -45,13 +45,12 @@ const timelineData = [
   },
 ];
 
-// Rangos iguales para tarjetas 2-4 (20% cada una = 120vh)
-// Tarjeta 1 corta (12% = 72vh), transiciones con mínimo overlap
+// Tarjeta 1 extendida (20% = 120vh), tarjetas 2-4 iguales (144vh c/u)
 const ANIMATION_RANGES = [
-  { start: 0.00, end: 0.12 }, // Tarjeta 1: 0-12% (72vh)
-  { start: 0.14, end: 0.38 }, // Tarjeta 2: 14-38% (144vh) — igual duración que 3 y 4
-  { start: 0.40, end: 0.64 }, // Tarjeta 3: 40-64% (144vh)
-  { start: 0.66, end: 0.90 }, // Tarjeta 4: 66-90% (144vh)
+  { start: 0.00, end: 0.20 }, // Tarjeta 1: 0-20% (120vh)
+  { start: 0.22, end: 0.46 }, // Tarjeta 2: 22-46% (144vh)
+  { start: 0.48, end: 0.72 }, // Tarjeta 3: 48-72% (144vh)
+  { start: 0.74, end: 0.98 }, // Tarjeta 4: 74-98% (144vh)
 ];
 
 // Lambda correcto para THREE.MathUtils.damp(x, y, lambda, dt):
@@ -86,13 +85,20 @@ export default function TimelineNode({
       // Tarjeta 1: zoom-in fijo → se achica y desaparece (sin moverse lateralmente)
       tX = -2.5;
       tZ = 0;
-      if (p < 0.51) {
-        const t = p / 0.51;
+      if (p < 0.35) {
+        // Aparece: zoom-in rápido
+        const t = p / 0.35;
         tScale   = 0.3 + t * 0.45;  // 0.3 → 0.75
         tOpacity = t;                // 0 → 1
         tY = yBase;
+      } else if (p < 0.70) {
+        // Permanece visible
+        tScale   = 0.75;
+        tOpacity = 1;
+        tY = yBase;
       } else {
-        const t = (p - 0.51) / 0.49;
+        // Desaparece: último 30% del rango
+        const t = (p - 0.70) / 0.30;
         tScale   = 0.75 - t * 0.45; // 0.75 → 0.3
         tOpacity = 1 - t;            // 1 → 0
         tY = yBase;
