@@ -13,34 +13,36 @@ export default function Pricing() {
           <h2 className="text-5xl font-bold">Inversión</h2>
         </div>
         <div data-animate="fade-up" className="anim-d100 text-center mb-16">
-          <p className="text-gray-400">Setup único + retorno mensual garantizado</p>
+          <p className="text-gray-400">Setup único + retorno mensual desde el primer mes</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {/* Sin GalateIA — entra desde la izquierda */}
+
+          {/* Sin GalateIA */}
           <div data-animate="slide-left" className="p-8 rounded-lg border border-gray-700 bg-gray-900/50">
-            <h3 className="text-2xl font-bold mb-6">Sin GalateIA</h3>
+            <h3 className="text-2xl font-bold mb-2">Sin GalateIA</h3>
+            <p className="text-gray-400 text-sm mb-6">Lo que perdés cada mes sin saberlo</p>
             <div className="space-y-4 text-gray-400">
               <div className="flex justify-between">
-                <span>Recepcionista (1.5 FTE)</span>
-                <span className="text-red">$4,500/mes</span>
-              </div>
-              <div className="flex justify-between">
-                <span>No-shows (fricciones)</span>
-                <span className="text-red">~$5,000/mes</span>
+                <span>No-shows sin recuperar</span>
+                <span style={{ color: '#ff6b6b' }}>~$1,200/mes</span>
               </div>
               <div className="flex justify-between">
                 <span>Tiempo administrativo perdido</span>
-                <span className="text-red">Incalculable</span>
+                <span style={{ color: '#ff6b6b' }}>~$800/mes</span>
               </div>
-              <div className="pt-6 border-t border-gray-700 mt-6 flex justify-between font-bold">
-                <span>Costo mensual</span>
-                <span className="text-red">$9,500+</span>
+              <div className="flex justify-between">
+                <span>Fricción en recepción</span>
+                <span style={{ color: '#ff6b6b' }}>~$500/mes</span>
+              </div>
+              <div className="pt-6 border-t border-gray-700 flex justify-between font-bold text-white">
+                <span>Pérdida mensual estimada</span>
+                <span style={{ color: '#ff6b6b' }}>~$2,500/mes</span>
               </div>
             </div>
           </div>
 
-          {/* Con GalateIA — entra desde la derecha + glow pulsante */}
+          {/* Con GalateIA */}
           <div
             data-animate="slide-right"
             className="glow-cyan-pulse p-8 rounded-lg border border-cyan bg-gradient-to-br from-cyan/10 to-dark"
@@ -58,30 +60,42 @@ export default function Pricing() {
             </div>
             <h3 className="text-2xl font-bold mb-6">Con GalateIA</h3>
             <div className="space-y-4">
-              <div className="flex justify-between text-green font-bold">
-                <span>Setup inicial</span>
-                <span>$1,900</span>
+              <div className="flex justify-between font-bold">
+                <span>Setup inicial (pago único)</span>
+                <span className="text-cyan">$1,900</span>
               </div>
-              <div className="pt-4 border-t border-gray-700 mt-4">
-                <div className="text-sm text-gray-400 mb-4">Recurrente mensual:</div>
+              <div className="pt-4 border-t border-gray-700">
                 <div className="flex justify-between mb-2">
-                  <span>Mantenimiento + mejoras</span>
-                  <span className="text-green">$290/mes</span>
+                  <span className="text-gray-400">Mantenimiento mensual</span>
+                  <span className="text-cyan font-bold">$290/mes</span>
                 </div>
               </div>
-              <div className="pt-6 border-t border-gray-700 mt-6">
-                <div className="flex justify-between font-bold mb-4">
-                  <span>ROI en 21 días</span>
-                  <span className="text-green">+$8,000</span>
+              <div className="pt-4 border-t border-gray-700">
+                <p className="text-sm text-gray-400 mb-3">Ahorro estimado según volumen de clínica:</p>
+                <div
+                  className="w-full text-center py-3 rounded-lg font-bold text-lg"
+                  style={{
+                    background: 'rgba(0,251,251,0.08)',
+                    border: '1px solid rgba(0,251,251,0.25)',
+                    color: '#00FBFB',
+                    letterSpacing: '0.03em',
+                  }}
+                >
+                  $1,500 — $2,500 recuperados/mes
                 </div>
-                <button className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white transition">
-                  Contratar Diagnóstico
+              </div>
+              <div className="pt-2">
+                <button className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white transition mt-2">
+                  Agendar Diagnóstico Gratuito
                 </button>
+                <p className="text-center text-gray-400 text-xs mt-3">
+                  15 minutos · Sin compromiso · Estimamos tu ROI en la llamada
+                </p>
               </div>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </section>
   );
