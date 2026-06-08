@@ -45,7 +45,17 @@ export default function Pricing() {
             data-animate="slide-right"
             className="glow-cyan-pulse p-8 rounded-lg border border-cyan bg-gradient-to-br from-cyan/10 to-dark"
           >
-            <div className="inline-block bg-green text-dark px-3 py-1 rounded text-sm font-bold mb-4">RECOMENDADO</div>
+            <div
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                background: 'linear-gradient(135deg, #00FBFB 0%, #00c8c8 100%)',
+                color: '#1A1A1D', padding: '5px 14px', borderRadius: '20px',
+                fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em',
+                marginBottom: '16px', boxShadow: '0 0 16px rgba(0,251,251,0.4)',
+              }}
+            >
+              ★ RECOMENDADO
+            </div>
             <h3 className="text-2xl font-bold mb-6">Con GalateIA</h3>
             <div className="space-y-4">
               <div className="flex justify-between text-green font-bold">

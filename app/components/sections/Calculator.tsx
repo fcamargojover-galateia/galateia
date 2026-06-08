@@ -14,8 +14,15 @@ export default function Calculator() {
   const costoAnual    = costoMensual * 12;
 
   return (
-    <section ref={ref} className="min-h-screen py-24 px-8 flex items-center justify-center bg-dark">
-      <div className="max-w-5xl mx-auto w-full">
+    <section ref={ref} className="relative min-h-screen py-24 px-8 flex items-center justify-center bg-dark overflow-hidden">
+      {/* Gradiente rojo/oscuro esquina superior derecha */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse 55% 45% at 100% 0%, rgba(255,60,60,0.09) 0%, transparent 65%)',
+        }}
+      />
+      <div className="relative max-w-5xl mx-auto w-full">
 
         <div data-animate="fade-up" className="text-center mb-4">
           <h2 className="text-5xl font-bold">¿Cuánto te cuesta?</h2>

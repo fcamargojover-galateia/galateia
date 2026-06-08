@@ -28,12 +28,12 @@ export default function FAQ() {
           <p className="text-gray-400">Todo lo que necesitas saber</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-0">
           {FAQS.map((faq, i) => (
             <div
               key={i}
               data-animate="fade-up"
-              className={`${DELAYS[i]} border border-gray-700 rounded-lg overflow-hidden bg-gray-900/50 hover:bg-gray-800 transition`}
+              className={`${DELAYS[i]} faq-item border border-gray-700 ${i > 0 ? 'border-t-0' : ''} ${i === 0 ? 'rounded-t-lg' : ''} ${i === FAQS.length - 1 ? 'rounded-b-lg' : ''} overflow-hidden bg-gray-900/50 hover:bg-gray-800 transition`}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}

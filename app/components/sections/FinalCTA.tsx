@@ -8,11 +8,18 @@ export default function FinalCTA() {
   return (
     <section ref={ref} className="relative py-32 px-8 bg-gradient-to-b from-dark to-black overflow-hidden">
 
-      {/* Gradiente radial pulsante de fondo */}
+      {/* Gradiente radial cyan pulsante — más intenso que otras secciones */}
       <div
         className="radial-pulse pointer-events-none absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,251,251,0.18) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(0,251,251,0.22) 0%, rgba(0,251,251,0.06) 45%, transparent 70%)',
+        }}
+      />
+      {/* Halo exterior más suave */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: 'radial-gradient(ellipse 100% 80% at 50% 50%, rgba(0,251,251,0.04) 0%, transparent 60%)',
         }}
       />
 
