@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  experimental: { cpus: 1 },
   reactStrictMode: true,
-  experimental: {
-    cpus: 1,
-  },
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
   webpack: (config) => {
     config.externals.push('canvas', 'jsdom')
