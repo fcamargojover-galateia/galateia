@@ -11,7 +11,7 @@ interface TimelineCanvasProps {
 
 export default function TimelineCanvas({ scrollProgress }: TimelineCanvasProps) {
   return (
-    <div className="relative w-full h-screen bg-dark overflow-hidden">
+    <div className="relative w-full h-screen bg-dark overflow-visible">
       <Canvas
         camera={{ position: [0, 0, 10], fov: 50 }}
         style={{

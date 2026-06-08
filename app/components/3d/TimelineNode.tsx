@@ -61,8 +61,9 @@ export default function TimelineNode({
     opacity: isFirst ? 0 : 0.2,
   });
 
-  const NODE_HEIGHT = 5;
-  const yPosition = -index * NODE_HEIGHT;
+  // Todas las tarjetas en Y=0: son secuenciales (nunca simultáneas),
+  // y la cámara solo ve ±4.6 unidades verticales con fov=50
+  const yPosition = 0;
 
   // Rangos personalizados con solapamiento para distribución proporcionada
   const animationRanges = [
@@ -85,20 +86,24 @@ export default function TimelineNode({
 
     if (isFirst) {
       // TARJETA 1: Zoom fijo, flotando a la izquierda del tubo
-      targetScale = 0.5 + nodeProgress * 0.5; // 0.5 → 1.0
-      targetX = -2.5; // Izquierda del tubo central (X=0), sin superponerse
+      targetX = -2.5;
       targetZ = 0;
 
-      // Opacity: 0 → 1 en el primer 60% del rango (más rápido, llega a 1 completo)
-      // luego 1 → 0 en el último 40%
-      if (nodeProgress < 0.6) {
-        targetOpacity = nodeProgress / 0.6; // 0 → 1 (más rápido)
+      // Zoom-in: 0 → 0.51 (15% más rápido que el 0.6 anterior)
+      // Fade-out: 0.51 → 1.0 (escala DECRECE, tarjeta se ACHICA al alejarse)
+      if (nodeProgress < 0.51) {
+        const t = nodeProgress / 0.51;
+        targetScale = 0.5 + t * 0.5;   // 0.5 → 1.0
+        targetOpacity = t;              // 0 → 1
       } else {
-        targetOpacity = 1 - (nodeProgress - 0.6) / 0.4; // 1 → 0
+        const t = (nodeProgress - 0.51) / 0.49;
+        targetScale = 1.0 - t * 0.5;   // 1.0 → 0.5 (se achica al salir)
+        targetOpacity = 1 - t;          // 1 → 0
       }
     } else {
       // TARJETAS 2, 3, 4: Trayectoria cruzada derecha → izquierda
-      const startX = 8;
+      // startX=4 mantiene la tarjeta dentro del frustum de la cámara (fov=50 cubre ~±4.6 unidades)
+      const startX = 4;
       const endX = -4;
       const startScale = 0.3;
       const endScale = 1;
@@ -108,8 +113,8 @@ export default function TimelineNode({
       targetX = startX + (endX - startX) * nodeProgress; // 8 → -4
       targetScale = startScale + (endScale - startScale) * nodeProgress; // 0.3 → 1
 
-      // Z: cruza a -2 cuando X pasa por 0
-      const crossingProgress = (8 - 0) / (8 - (-4)); // ≈ 0.67
+      // Z: cruza a -2 cuando X pasa por 0 (exactamente al 50% del viaje con startX=4, endX=-4)
+      const crossingProgress = 0.5;
       if (nodeProgress < crossingProgress) {
         targetZ = -2 * (nodeProgress / crossingProgress);
       } else {
