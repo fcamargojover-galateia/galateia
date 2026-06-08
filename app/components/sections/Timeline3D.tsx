@@ -8,22 +8,22 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Timeline3D() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const spiralStateRef = useRef({
     rotation: 0,
     position: 0,
   });
 
   useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) return;
+    const section = sectionRef.current;
+    if (!section) return;
 
     const tl = gsap.to(spiralStateRef.current, {
       rotation: Math.PI * 4,
       position: 12,
       duration: 1,
       scrollTrigger: {
-        trigger: scrollContainer,
+        trigger: section,
         start: 'top top',
         end: 'bottom bottom',
         scrub: 1,
@@ -37,15 +37,17 @@ export default function Timeline3D() {
   }, []);
 
   return (
-    <section className="relative w-full">
-      {/* Canvas 3D fijo */}
-      <TimelineCanvas spiralStateRef={spiralStateRef} />
+    <section
+      ref={sectionRef}
+      className="relative w-full h-[500vh]"
+    >
+      {/* Canvas 3D en posición relativa dentro de la sección */}
+      <div className="sticky top-0 h-screen w-full">
+        <TimelineCanvas spiralStateRef={spiralStateRef} />
+      </div>
 
-      {/* Contenedor de scroll invisible para habilitar scroll */}
-      <div
-        ref={scrollContainerRef}
-        className="relative w-full h-[400vh] pointer-events-none"
-      />
+      {/* Contenedor invisible que proporciona altura para scroll */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none" />
     </section>
   );
 }
