@@ -1,1 +1,1 @@
-web: node .next/standalone/server.js
+web: node --max-old-space-size=512 .next/standalone/server.js
