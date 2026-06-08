@@ -45,6 +45,15 @@ const timelineData = [
   },
 ];
 
+// Rangos de animación con solapamiento mínimo (~6-18vh entre tarjetas)
+// Total 600vh: cada tarjeta tiene su propio espacio, transición < 100vh entre consecutivas
+const ANIMATION_RANGES = [
+  { start: 0.00, end: 0.14 }, // Tarjeta 1: 0-14% (84vh) — corta y directa
+  { start: 0.13, end: 0.35 }, // Tarjeta 2: 13-35% (132vh) — 6vh overlap con tarjeta 1
+  { start: 0.32, end: 0.58 }, // Tarjeta 3: 32-58% (156vh) — 18vh overlap con tarjeta 2
+  { start: 0.55, end: 0.82 }, // Tarjeta 4: 55-82% (162vh) — 18vh overlap con tarjeta 3
+];
+
 export default function TimelineNode({
   index,
   data,
@@ -55,26 +64,19 @@ export default function TimelineNode({
   const groupRef = useRef<THREE.Group>(null);
   const htmlDivRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef({
-    scale: isFirst ? 0.5 : 0.3,
-    x: isFirst ? 0 : 8,
+    scale: isFirst ? 0.3 : 0.3,
+    x: isFirst ? -2.5 : 4,
     z: 0,
-    opacity: isFirst ? 0 : 0.2,
+    opacity: 0,
   });
 
-  // Todas las tarjetas en Y=0: son secuenciales (nunca simultáneas),
-  // y la cámara solo ve ±4.6 unidades verticales con fov=50
-  const yPosition = 0;
+  // Y ligeramente por encima del centro para tarjeta 1 (~8% del rango visible ±4.6)
+  const yPosition = isFirst ? 1.0 : 0;
 
-  // Rangos personalizados con solapamiento para distribución proporcionada
-  const animationRanges = [
-    { start: 0.0, end: 0.2 },   // Tarjeta 1: 0% a 20%
-    { start: 0.15, end: 0.45 }, // Tarjeta 2: 15% a 45%
-    { start: 0.4, end: 0.7 },   // Tarjeta 3: 40% a 70%
-    { start: 0.65, end: 0.9 },  // Tarjeta 4: 65% a 90%
-  ];
-
-  const range = animationRanges[index] || { start: 0, end: 1 };
-  const nodeProgress = Math.max(0, Math.min(1, (scrollProgress - range.start) / (range.end - range.start)));
+  const range = ANIMATION_RANGES[index] || { start: 0, end: 1 };
+  const nodeProgress = Math.max(0, Math.min(1,
+    (scrollProgress - range.start) / (range.end - range.start)
+  ));
 
   useFrame(() => {
     if (!groupRef.current) return;
@@ -85,74 +87,44 @@ export default function TimelineNode({
     let targetOpacity: number;
 
     if (isFirst) {
-      // TARJETA 1: Zoom fijo, flotando a la izquierda del tubo
+      // TARJETA 1: zoom-in → pico visible → achica y desaparece
       targetX = -2.5;
       targetZ = 0;
 
-      // Zoom-in: 0 → 0.51 (15% más rápido que el 0.6 anterior)
-      // Fade-out: 0.51 → 1.0 (escala DECRECE, tarjeta se ACHICA al alejarse)
       if (nodeProgress < 0.51) {
         const t = nodeProgress / 0.51;
-        targetScale = 0.5 + t * 0.5;   // 0.5 → 1.0
-        targetOpacity = t;              // 0 → 1
+        targetScale = 0.3 + t * 0.45;  // 0.3 → 0.75 (30% del canvas, compacta)
+        targetOpacity = t;
       } else {
         const t = (nodeProgress - 0.51) / 0.49;
-        targetScale = 1.0 - t * 0.5;   // 1.0 → 0.5 (se achica al salir)
-        targetOpacity = 1 - t;          // 1 → 0
+        targetScale = 0.75 - t * 0.45;  // 0.75 → 0.3 (se achica al salir)
+        targetOpacity = 1 - t;
       }
     } else {
-      // TARJETAS 2, 3, 4: Trayectoria cruzada derecha → izquierda
-      // startX=4 mantiene la tarjeta dentro del frustum de la cámara (fov=50 cubre ~±4.6 unidades)
-      const startX = 4;
-      const endX = -4;
-      const startScale = 0.3;
-      const endScale = 1;
-      const startOpacity = 0.2;
-      const endOpacity = 1;
+      // TARJETAS 2, 3, 4: vuelan de derecha a izquierda cruzando el tubo
+      targetX = 4 + (-4 - 4) * nodeProgress;   // 4 → -4
+      targetScale = 0.3 + 0.7 * nodeProgress;  // 0.3 → 1.0
+      targetOpacity = 0.2 + 0.8 * nodeProgress; // 0.2 → 1.0
 
-      targetX = startX + (endX - startX) * nodeProgress; // 8 → -4
-      targetScale = startScale + (endScale - startScale) * nodeProgress; // 0.3 → 1
-
-      // Z: cruza a -2 cuando X pasa por 0 (exactamente al 50% del viaje con startX=4, endX=-4)
-      const crossingProgress = 0.5;
-      if (nodeProgress < crossingProgress) {
-        targetZ = -2 * (nodeProgress / crossingProgress);
+      // Z: cruza el tubo (Z=-2) en el punto medio del viaje
+      if (nodeProgress < 0.5) {
+        targetZ = -2 * (nodeProgress / 0.5);
       } else {
-        targetZ = -2 + 2 * ((nodeProgress - crossingProgress) / (1 - crossingProgress));
+        targetZ = -2 + 2 * ((nodeProgress - 0.5) / 0.5);
       }
-
-      targetOpacity = startOpacity + (endOpacity - startOpacity) * nodeProgress; // 0.2 → 1
     }
 
-    // Aplicar suavizado (damp) — tarjeta 1 más rápida para que el zoom-in se sienta inmediato
-    const dampFactor = isFirst ? 0.35 : 0.15;
-    stateRef.current.scale = THREE.MathUtils.damp(
-      stateRef.current.scale,
-      targetScale,
-      dampFactor,
-      1 / 60
-    );
+    // Damp alto (0.4) para que todo responda rápido incluso con scroll veloz
+    stateRef.current.scale = THREE.MathUtils.damp(stateRef.current.scale, targetScale, 0.4, 1 / 60);
+    stateRef.current.x = THREE.MathUtils.damp(stateRef.current.x, targetX, 0.4, 1 / 60);
+    stateRef.current.z = THREE.MathUtils.damp(stateRef.current.z, targetZ, 0.4, 1 / 60);
+    stateRef.current.opacity = THREE.MathUtils.damp(stateRef.current.opacity, targetOpacity, 0.4, 1 / 60);
 
-    stateRef.current.x = THREE.MathUtils.damp(stateRef.current.x, targetX, isFirst ? 0.35 : 0.12, 1 / 60);
-    stateRef.current.z = THREE.MathUtils.damp(stateRef.current.z, targetZ, 0.12, 1 / 60);
-    stateRef.current.opacity = THREE.MathUtils.damp(
-      stateRef.current.opacity,
-      targetOpacity,
-      isFirst ? 0.3 : 0.1,
-      1 / 60
-    );
-
-    // Aplicar transformaciones
     groupRef.current.position.x = stateRef.current.x;
     groupRef.current.position.y = yPosition;
     groupRef.current.position.z = stateRef.current.z;
-    groupRef.current.scale.set(
-      stateRef.current.scale,
-      stateRef.current.scale,
-      stateRef.current.scale
-    );
+    groupRef.current.scale.set(stateRef.current.scale, stateRef.current.scale, stateRef.current.scale);
 
-    // Animar opacidad del HTML
     if (htmlDivRef.current) {
       htmlDivRef.current.style.opacity = String(stateRef.current.opacity);
     }
@@ -160,15 +132,14 @@ export default function TimelineNode({
 
   const nodeData = timelineData[index] || data;
 
-  // Tarjeta 1 más grande (centrada, zoom-in), tarjetas 2-4 más compactas
-  const cardWidth = isFirst ? '240px' : '160px';
-  const cardPadding = isFirst ? '20px' : '14px';
-  const dayFontSize = isFirst ? '11px' : '9px';
-  const titleFontSize = isFirst ? '18px' : '13px';
-  const descFontSize = isFirst ? '13px' : '11px';
+  const cardWidth = isFirst ? '180px' : '160px';
+  const cardPadding = isFirst ? '16px' : '14px';
+  const dayFontSize = isFirst ? '10px' : '9px';
+  const titleFontSize = isFirst ? '15px' : '13px';
+  const descFontSize = isFirst ? '12px' : '11px';
 
   return (
-    <group ref={groupRef} position={[0, yPosition, 0]}>
+    <group ref={groupRef} position={[stateRef.current.x, yPosition, 0]}>
       <Html transform center>
         <div
           ref={htmlDivRef}
@@ -180,44 +151,38 @@ export default function TimelineNode({
             borderRadius: '8px',
             backdropFilter: 'blur(10px)',
             pointerEvents: 'none',
-            opacity: 0.2,
+            opacity: 0,
             boxSizing: 'border-box',
           }}
         >
-          <p
-            style={{
-              fontFamily: 'DM Mono, monospace',
-              fontSize: dayFontSize,
-              color: '#00FBFB',
-              letterSpacing: '0.2em',
-              margin: 0,
-              marginBottom: '6px',
-              textTransform: 'uppercase',
-              fontWeight: 'bold',
-            }}
-          >
+          <p style={{
+            fontFamily: 'DM Mono, monospace',
+            fontSize: dayFontSize,
+            color: '#00FBFB',
+            letterSpacing: '0.2em',
+            margin: 0,
+            marginBottom: '6px',
+            textTransform: 'uppercase',
+            fontWeight: 'bold',
+          }}>
             {nodeData.day}
           </p>
-          <h3
-            style={{
-              fontFamily: 'Syne, sans-serif',
-              fontSize: titleFontSize,
-              fontWeight: 800,
-              color: '#FFFFFF',
-              margin: '6px 0 8px 0',
-            }}
-          >
+          <h3 style={{
+            fontFamily: 'Syne, sans-serif',
+            fontSize: titleFontSize,
+            fontWeight: 800,
+            color: '#FFFFFF',
+            margin: '6px 0 8px 0',
+          }}>
             {nodeData.title}
           </h3>
-          <p
-            style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: descFontSize,
-              color: 'rgba(255,255,255,0.7)',
-              lineHeight: '1.5',
-              margin: 0,
-            }}
-          >
+          <p style={{
+            fontFamily: 'DM Sans, sans-serif',
+            fontSize: descFontSize,
+            color: 'rgba(255,255,255,0.7)',
+            lineHeight: '1.5',
+            margin: 0,
+          }}>
             {nodeData.description}
           </p>
         </div>
