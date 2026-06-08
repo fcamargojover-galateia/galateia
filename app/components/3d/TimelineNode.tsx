@@ -64,9 +64,16 @@ export default function TimelineNode({
   const NODE_HEIGHT = 5;
   const yPosition = -index * NODE_HEIGHT;
 
-  const nodeStart = index / totalNodes;
-  const nodeEnd = (index + 1) / totalNodes;
-  const nodeProgress = Math.max(0, Math.min(1, (scrollProgress - nodeStart) / (nodeEnd - nodeStart)));
+  // Rangos personalizados con solapamiento para distribución proporcionada
+  const animationRanges = [
+    { start: 0.0, end: 0.2 },   // Tarjeta 1: 0% a 20%
+    { start: 0.15, end: 0.45 }, // Tarjeta 2: 15% a 45%
+    { start: 0.4, end: 0.7 },   // Tarjeta 3: 40% a 70%
+    { start: 0.65, end: 0.9 },  // Tarjeta 4: 65% a 90%
+  ];
+
+  const range = animationRanges[index] || { start: 0, end: 1 };
+  const nodeProgress = Math.max(0, Math.min(1, (scrollProgress - range.start) / (range.end - range.start)));
 
   useFrame(() => {
     if (!groupRef.current) return;
@@ -77,9 +84,9 @@ export default function TimelineNode({
     let targetOpacity: number;
 
     if (isFirst) {
-      // TARJETA 1: Zoom fijo, X siempre 0
+      // TARJETA 1: Zoom fijo, flotando a la izquierda del tubo
       targetScale = 0.5 + nodeProgress * 0.5; // 0.5 → 1.0
-      targetX = 0; // Siempre en el centro
+      targetX = -2; // Desplazada a la izquierda del tubo central (X=0)
       targetZ = 0;
 
       // Opacity: 0 → 1 durante primer 50%, luego 1 → 0 en segundo 50%
