@@ -1,11 +1,13 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  transpilePackages: ['three'],
-  webpack: (config) => {
-    config.externals.push('canvas', 'jsdom');
-    return config;
-  },
-};
+import type { NextConfig } from 'next'
 
-module.exports = nextConfig;
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  output: 'standalone',
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
+  webpack: (config) => {
+    config.externals.push('canvas', 'jsdom')
+    return config
+  },
+}
+
+export default nextConfig
