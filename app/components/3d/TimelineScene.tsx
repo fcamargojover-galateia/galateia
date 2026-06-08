@@ -1,8 +1,7 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import TimelineNode from './TimelineNode';
 
@@ -81,6 +80,7 @@ export default function TimelineScene({ scrollProgress }: TimelineSceneProps) {
           data={node}
           scrollProgress={scrollProgress}
           totalNodes={TIMELINE_DATA.length}
+          isFirst={index === 0}
         />
       ))}
     </group>

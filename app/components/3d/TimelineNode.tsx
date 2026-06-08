@@ -15,6 +15,7 @@ interface TimelineNodeProps {
   };
   scrollProgress: number;
   totalNodes: number;
+  isFirst: boolean;
 }
 
 const timelineData = [
@@ -49,61 +50,77 @@ export default function TimelineNode({
   data,
   scrollProgress,
   totalNodes,
+  isFirst,
 }: TimelineNodeProps) {
   const groupRef = useRef<THREE.Group>(null);
   const htmlDivRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef({
-    scale: 1,
-    x: 0,
-    rotationY: 0,
-    opacity: 1,
+    scale: isFirst ? 0.5 : 0.3,
+    x: isFirst ? 0 : 8,
+    z: 0,
+    opacity: isFirst ? 0 : 0.2,
   });
 
   const NODE_HEIGHT = 5;
-  const OFFSET_DISTANCE = 5;
-  const side = index % 2 === 0 ? -1 : 1;
   const yPosition = -index * NODE_HEIGHT;
 
   const nodeStart = index / totalNodes;
   const nodeEnd = (index + 1) / totalNodes;
   const nodeProgress = Math.max(0, Math.min(1, (scrollProgress - nodeStart) / (nodeEnd - nodeStart)));
-  const isFirstNode = index === 0;
 
   useFrame(() => {
     if (!groupRef.current) return;
 
-    // Escala
-    let targetScale = 0.1 + nodeProgress * 0.9;
-    if (isFirstNode) {
+    let targetScale: number;
+    let targetX: number;
+    let targetZ: number;
+    let targetOpacity: number;
+
+    if (isFirst) {
+      // TARJETA 1: Zoom fijo, X siempre 0
+      targetScale = 0.5 + nodeProgress * 0.5; // 0.5 → 1.0
+      targetX = 0; // Siempre en el centro
+      targetZ = 0;
+
+      // Opacity: 0 → 1 durante primer 50%, luego 1 → 0 en segundo 50%
       if (nodeProgress < 0.5) {
-        targetScale = 0.1 + 1.2 * (nodeProgress * 2);
+        targetOpacity = nodeProgress * 2; // 0 → 1
       } else {
-        targetScale = 1.3 - (nodeProgress - 0.5) * 2 * 0.3;
+        targetOpacity = 2 - nodeProgress * 2; // 1 → 0
       }
+    } else {
+      // TARJETAS 2, 3, 4: Trayectoria cruzada derecha → izquierda
+      const startX = 8;
+      const endX = -4;
+      const startScale = 0.3;
+      const endScale = 1;
+      const startOpacity = 0.2;
+      const endOpacity = 1;
+
+      targetX = startX + (endX - startX) * nodeProgress; // 8 → -4
+      targetScale = startScale + (endScale - startScale) * nodeProgress; // 0.3 → 1
+
+      // Z: cruza a -2 cuando X pasa por 0
+      const crossingProgress = (8 - 0) / (8 - (-4)); // ≈ 0.67
+      if (nodeProgress < crossingProgress) {
+        targetZ = -2 * (nodeProgress / crossingProgress);
+      } else {
+        targetZ = -2 + 2 * ((nodeProgress - crossingProgress) / (1 - crossingProgress));
+      }
+
+      targetOpacity = startOpacity + (endOpacity - startOpacity) * nodeProgress; // 0.2 → 1
     }
 
+    // Aplicar suavizado (damp)
     stateRef.current.scale = THREE.MathUtils.damp(
       stateRef.current.scale,
-      Math.max(0.1, targetScale),
+      targetScale,
       0.15,
       1 / 60
     );
 
-    // Desplazamiento
-    const targetX = side * OFFSET_DISTANCE * nodeProgress;
     stateRef.current.x = THREE.MathUtils.damp(stateRef.current.x, targetX, 0.12, 1 / 60);
-
-    // Rotación
-    const targetRotation = side * Math.PI * 2 * nodeProgress;
-    stateRef.current.rotationY = THREE.MathUtils.damp(
-      stateRef.current.rotationY,
-      targetRotation,
-      0.1,
-      1 / 60
-    );
-
-    // Opacidad
-    const targetOpacity = Math.max(0.6, nodeProgress);
+    stateRef.current.z = THREE.MathUtils.damp(stateRef.current.z, targetZ, 0.12, 1 / 60);
     stateRef.current.opacity = THREE.MathUtils.damp(
       stateRef.current.opacity,
       targetOpacity,
@@ -111,17 +128,17 @@ export default function TimelineNode({
       1 / 60
     );
 
-    // Aplicar transformaciones al grupo
+    // Aplicar transformaciones
     groupRef.current.position.x = stateRef.current.x;
     groupRef.current.position.y = yPosition;
+    groupRef.current.position.z = stateRef.current.z;
     groupRef.current.scale.set(
       stateRef.current.scale,
       stateRef.current.scale,
       stateRef.current.scale
     );
-    groupRef.current.rotation.y = stateRef.current.rotationY;
 
-    // Animar opacidad del Html
+    // Animar opacidad del HTML
     if (htmlDivRef.current) {
       htmlDivRef.current.style.opacity = String(stateRef.current.opacity);
     }
@@ -131,7 +148,6 @@ export default function TimelineNode({
 
   return (
     <group ref={groupRef} position={[0, yPosition, 0]}>
-      {/* Card de información con Html */}
       <Html transform center>
         <div
           ref={htmlDivRef}
@@ -143,8 +159,7 @@ export default function TimelineNode({
             borderRadius: '8px',
             backdropFilter: 'blur(10px)',
             pointerEvents: 'none',
-            opacity: 0.6,
-            transition: 'opacity 0.3s ease',
+            opacity: 0.2,
           }}
         >
           <p
@@ -153,8 +168,8 @@ export default function TimelineNode({
               fontSize: '11px',
               color: '#00FBFB',
               letterSpacing: '0.2em',
-              marginBottom: '8px',
               margin: 0,
+              marginBottom: '8px',
               textTransform: 'uppercase',
               fontWeight: 'bold',
             }}
@@ -167,8 +182,7 @@ export default function TimelineNode({
               fontSize: '18px',
               fontWeight: 800,
               color: '#FFFFFF',
-              marginBottom: '12px',
-              margin: '8px 0',
+              margin: '8px 0 12px 0',
             }}
           >
             {nodeData.title}
