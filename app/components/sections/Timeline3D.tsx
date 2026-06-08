@@ -42,7 +42,7 @@ export default function Timeline3D() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-[600vh]"
+      className="relative w-full h-[250vh]"
     >
       {/* Canvas 3D en posición sticky */}
       <div className="sticky top-0 h-screen w-full">
