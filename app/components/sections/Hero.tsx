@@ -13,12 +13,12 @@ export default function Hero() {
           {/* Columna izquierda: copy */}
           <div className="flex-1 text-center lg:text-left">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
-              Sistema Operativo de{' '}
-              <span className="text-cyan">Retención</span>
+              Perdés cuando no vienen. Perdés más cuando no los buscás después.{' '}
+              <span className="text-cyan">GalateIA recupera los dos.</span>
             </h1>
 
             <p className="text-xl text-gray-400 mb-10 max-w-xl mx-auto lg:mx-0">
-              Reduce no-shows, elimina fricción en recepción y reactiva pacientes inactivos con agentes de IA autónomos.
+              Agentes de IA que confirman turnos, evitan no-shows y reactivan tu base de pacientes — solos.
             </p>
 
             <button className="px-8 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg">

@@ -4,11 +4,16 @@ import { useState } from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const FAQS = [
-  { q: '¿Cuánto tiempo tarda la implementación?',    a: '21 días. Diagnóstico (día 1), construcción (días 2-15), integración y testing (días 16-20), encendido (día 21).' },
-  { q: '¿Es compatible con mi CRM/calendario actual?', a: 'Sí. Trabajamos con Clinics Pro, Google Calendar, Outlook, MiConsultorio y más. Si usas algo diferente, hacemos custom integration.' },
-  { q: '¿Qué pasa si hay un problema?',              a: 'Incluye soporte 24/7. Nuestros agentes están monitoreados. Ante cualquier caída o error, reaccionamos en menos de 30 minutos.' },
-  { q: '¿Puedo escalarlo después?',                  a: 'Completamente. Empezamos con 1 agente y escalamos a 3. Si necesitas más capacidad, agregamos recursos sin parar el sistema.' },
-  { q: '¿Qué pasa con los datos de mis pacientes?',  a: 'Todo encriptado. Cumplimos HIPAA, PDPA y regulaciones locales. Nunca compartimos datos con terceros.' },
+  { q: '¿Cuánto tiempo tarda y tengo que parar mi clínica?',
+    a: '21 días. Y no, no parás nada. El día 1 hacemos un diagnóstico de 15 minutos. Los días 2 al 20 construimos e integramos en nuestro entorno mientras tu clínica opera con normalidad. El día 21 encendemos. Vos no tocás nada.' },
+  { q: '¿Esto reemplaza a mi recepcionista?',
+    a: 'No. La libera. En vez de responder el mismo WhatsApp 40 veces por día, tu recepcionista hace lo que requiere criterio humano — casos complejos, situaciones delicadas, decisiones que una IA no toma. El agente hace lo repetitivo. Tu equipo hace lo importante.' },
+  { q: '¿Por qué no automatizo esto yo mismo con WhatsApp Business?',
+    a: 'WhatsApp Business manda mensajes. No agenda, no confirma, no reactiva. Y cada mes que seguís usando solo eso, tus no-shows te siguen costando lo mismo. La herramienta gratuita tiene un costo que no aparece en ninguna factura.' },
+  { q: '¿Funciona con el sistema que ya uso?',
+    a: 'Sí. Integramos con Clinics Pro, Google Calendar, Outlook, MiConsultorio y más. Si usás algo diferente, hacemos integración custom. No reemplazamos nada de lo que ya tenés — nos montamos encima.' },
+  { q: '¿Mis datos y los de mis pacientes están seguros?',
+    a: 'Todo encriptado. Cumplimos HIPAA y GDPR. Nunca compartimos datos con terceros. Ante cualquier problema técnico respondemos en menos de 30 minutos.' },
 ];
 
 const DELAYS = ['', 'anim-d100', 'anim-d200', 'anim-d300', 'anim-d400'];

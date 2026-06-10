@@ -4,9 +4,9 @@ import { useEffect, useRef } from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const AGENTS = [
-  { label: 'Atención',     title: 'Agente de Atención',     desc: 'Responde WhatsApp 24/7, cualifica pacientes, agenda automáticamente.',      icon: '💬' },
-  { label: 'Agenda',       title: 'Agente de Agenda',       desc: 'Sincroniza calendarios, evita conflictos, notifica cambios en tiempo real.',  icon: '📅' },
-  { label: 'Reactivación', title: 'Agente de Reactivación', desc: 'Identifica pacientes inactivos, personaliza mensajes, cierra ventas upsell.', icon: '🔄' },
+  { label: 'Atención',     title: 'Agente de Atención',     desc: 'Tu recepción no puede estar pegada al teléfono todo el día. El agente responde al instante, cualifica y agenda — a las 2am si hace falta.',      icon: '💬' },
+  { label: 'Agenda',       title: 'Agente de Agenda',       desc: 'Un turno sin confirmar es un turno que se pierde. El agente confirma, recuerda y reprograma antes de que el paciente simplemente no aparezca.',  icon: '📅' },
+  { label: 'Reactivación', title: 'Agente de Reactivación', desc: 'Tu CRM tiene plata dormida. Pacientes que pagaron una vez y nunca volviste a llamar. El agente los reactiva automáticamente — vos no tocás nada.', icon: '🔄' },
 ];
 
 const DELAYS = ['', 'anim-d200', 'anim-d400'];

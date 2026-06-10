@@ -27,13 +27,13 @@ export default function FinalCTA() {
 
         <div data-animate="fade-up-lg">
           <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            ¿Cuánto dinero pierdes cada mes?
+            15 minutos para saber exactamente cuánto perdés.
           </h2>
         </div>
 
         <div data-animate="fade-up" className="anim-d100">
           <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-            El costo de no tomar acción es mayor que la inversión en automatización.
+            Calculamos tu pérdida real, te mostramos el sistema en vivo y estimamos tu ROI. Sin compromiso. Sin letra chica.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function FinalCTA() {
             <div>
               <div className="text-3xl mb-2">🔒</div>
               <h3 className="font-bold mb-2">Seguridad garantizada</h3>
-              <p className="text-gray-400 text-sm">HIPAA, PDPA, encriptado</p>
+              <p className="text-gray-400 text-sm">HIPAA, GDPR, encriptado</p>
             </div>
             <div>
               <div className="text-3xl mb-2">📈</div>
