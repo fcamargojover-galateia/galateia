@@ -21,7 +21,10 @@ export default function Hero() {
               Agentes de IA que confirman turnos, evitan no-shows y reactivan tu base de pacientes — solos.
             </p>
 
-            <button className="px-8 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg">
+            <button
+              aria-label="Agendar diagnóstico operativo"
+              className="px-8 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg cursor-pointer"
+            >
               Diagnóstico Operativo (15 min)
             </button>
 

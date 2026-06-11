@@ -1,5 +1,6 @@
 'use client';
 
+import { Zap, Shield, TrendingUp } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function FinalCTA() {
@@ -38,7 +39,10 @@ export default function FinalCTA() {
         </div>
 
         <div data-animate="fade-up" className="anim-d200 space-y-6">
-          <button className="w-full md:w-auto px-10 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg">
+          <button
+            aria-label="Agendar diagnóstico operativo"
+            className="w-full md:w-auto px-10 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg cursor-pointer"
+          >
             Agendar Diagnóstico Operativo
           </button>
           <p className="text-sm text-gray-500">
@@ -49,17 +53,17 @@ export default function FinalCTA() {
         <div data-animate="fade-up" className="anim-d300 mt-20 pt-12 border-t border-gray-700">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <div className="text-3xl mb-2">⚡</div>
+              <Zap size={28} className="text-cyan mb-2 mx-auto" strokeWidth={1.5} />
               <h3 className="font-bold mb-2">Implementación rápida</h3>
               <p className="text-gray-400 text-sm">21 días completos de setup</p>
             </div>
             <div>
-              <div className="text-3xl mb-2">🔒</div>
+              <Shield size={28} className="text-cyan mb-2 mx-auto" strokeWidth={1.5} />
               <h3 className="font-bold mb-2">Seguridad garantizada</h3>
               <p className="text-gray-400 text-sm">HIPAA, GDPR, encriptado</p>
             </div>
             <div>
-              <div className="text-3xl mb-2">📈</div>
+              <TrendingUp size={28} className="text-cyan mb-2 mx-auto" strokeWidth={1.5} />
               <h3 className="font-bold mb-2">ROI comprobado</h3>
               <p className="text-gray-400 text-sm">21 días para recuperar inversión</p>
             </div>
@@ -67,7 +71,7 @@ export default function FinalCTA() {
         </div>
 
         <div data-animate="fade-up" className="anim-d400 mt-16 text-gray-500 text-sm">
-          <p>GalateIA © 2024 — Firma de Automatización e Infraestructura Operativa</p>
+          <p>GalateIA © {new Date().getFullYear()} — Firma de Automatización e Infraestructura Operativa</p>
           <p className="mt-2">Construyendo sistemas autónomos para clínicas privadas</p>
         </div>
 

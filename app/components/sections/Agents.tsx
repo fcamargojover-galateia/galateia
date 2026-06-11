@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { MessageCircle, Calendar, RefreshCw, type LucideIcon } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
-const AGENTS = [
-  { label: 'Atención',     title: 'Agente de Atención',     desc: 'Tu recepción no puede estar pegada al teléfono todo el día. El agente responde al instante, cualifica y agenda — a las 2am si hace falta.',      icon: '💬' },
-  { label: 'Agenda',       title: 'Agente de Agenda',       desc: 'Un turno sin confirmar es un turno que se pierde. El agente confirma, recuerda y reprograma antes de que el paciente simplemente no aparezca.',  icon: '📅' },
-  { label: 'Reactivación', title: 'Agente de Reactivación', desc: 'Tu CRM tiene plata dormida. Pacientes que pagaron una vez y nunca volviste a llamar. El agente los reactiva automáticamente — vos no tocás nada.', icon: '🔄' },
+const AGENTS: { label: string; title: string; desc: string; Icon: LucideIcon }[] = [
+  { label: 'Atención',     title: 'Agente de Atención',     desc: 'Tu recepción no puede estar pegada al teléfono todo el día. El agente responde al instante, cualifica y agenda — a las 2am si hace falta.',      Icon: MessageCircle },
+  { label: 'Agenda',       title: 'Agente de Agenda',       desc: 'Un turno sin confirmar es un turno que se pierde. El agente confirma, recuerda y reprograma antes de que el paciente simplemente no aparezca.',  Icon: Calendar },
+  { label: 'Reactivación', title: 'Agente de Reactivación', desc: 'Tu CRM tiene plata dormida. Pacientes que pagaron una vez y nunca volviste a llamar. El agente los reactiva automáticamente — vos no tocás nada.', Icon: RefreshCw },
 ];
 
 const DELAYS = ['', 'anim-d200', 'anim-d400'];
@@ -134,11 +135,8 @@ export default function Agents() {
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Icono dentro del nodo
-        ctx.font         = `${16 + ap * 2}px sans-serif`;
-        ctx.textAlign    = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(agent.icon, x, y);
+        // Nota: SVG/Lucide no es compatible con Canvas 2D API — excepción técnica documentada.
+        // El ícono se renderiza únicamente en las cards JSX, no en el canvas.
 
         // Etiqueta DEBAJO del nodo — blanca, alto contraste
         ctx.fillStyle    = 'rgba(255,255,255,0.92)';
@@ -198,7 +196,7 @@ export default function Agents() {
                 data-animate="fade-up"
                 className={`${DELAYS[i]} card-hover p-6 rounded-lg border border-gray-700 bg-gray-900/50`}
               >
-                <div className="text-3xl mb-3">{agent.icon}</div>
+                <agent.Icon size={28} className="text-cyan mb-3" strokeWidth={1.5} />
                 <h3 className="text-xl font-bold mb-2">{agent.title}</h3>
                 <p className="text-gray-400">{agent.desc}</p>
               </div>

@@ -8,7 +8,10 @@ export default function Nav() {
         <a href="#pricing" className="hover:text-cyan transition">Precios</a>
         <a href="#faq" className="hover:text-cyan transition">FAQ</a>
       </div>
-      <button className="px-6 py-2 bg-cyan text-dark rounded font-semibold hover:bg-white transition">
+      <button
+        aria-label="Agendar diagnóstico operativo"
+        className="px-6 py-2 bg-cyan text-dark rounded font-semibold hover:bg-white transition cursor-pointer"
+      >
         Diagnóstico
       </button>
     </nav>

@@ -85,7 +85,10 @@ export default function Pricing() {
                 </div>
               </div>
               <div className="pt-2">
-                <button className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white transition mt-2">
+                <button
+                  aria-label="Agendar diagnóstico gratuito"
+                  className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white transition mt-2 cursor-pointer"
+                >
                   Agendar Diagnóstico Gratuito
                 </button>
                 <p className="text-center text-gray-400 text-xs mt-3">

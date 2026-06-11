@@ -42,7 +42,9 @@ export default function FAQ() {
             >
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full px-6 py-4 flex justify-between items-center text-left font-semibold hover:text-cyan transition"
+                aria-label={faq.q}
+                aria-expanded={openIndex === i}
+                className="w-full px-6 py-4 flex justify-between items-center text-left font-semibold hover:text-cyan transition cursor-pointer"
               >
                 <span>{faq.q}</span>
                 <span className={`text-cyan transition-transform ${openIndex === i ? 'rotate-180' : ''}`}>▼</span>
