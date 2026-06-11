@@ -41,7 +41,7 @@ export default function FinalCTA() {
         <div data-animate="fade-up" className="anim-d200 space-y-6">
           <button
             aria-label="Agendar diagnóstico operativo"
-            className="w-full md:w-auto px-10 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg cursor-pointer"
+            className="w-full md:w-auto px-10 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white active:scale-95 transition-all text-lg cursor-pointer"
           >
             Agendar Diagnóstico Operativo
           </button>

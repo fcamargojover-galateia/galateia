@@ -147,9 +147,9 @@ export default function Timeline3D() {
       <div className="sticky top-0 h-screen w-full">
         <TimelineCanvas scrollProgress={scrollProgress} />
 
-        {/* P8 — step progress indicator (interactive) */}
+        {/* P8 — step progress indicator (desktop only, R5) */}
         <nav
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center"
+          className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-10 items-center"
           aria-label="Pasos del proceso de implementación"
           style={{
             background: 'rgba(8, 8, 10, 0.72)',
@@ -175,20 +175,22 @@ export default function Timeline3D() {
               }}
             >
               <div
-                className="transition-all duration-300 shrink-0"
+                className="shrink-0"
                 style={{
-                  width: i === currentStep ? '20px' : '6px',
+                  width: '20px',
                   height: '6px',
                   borderRadius: '3px',
                   background: i === currentStep ? 'var(--cyan)' : 'rgba(255,255,255,0.3)',
                   boxShadow: i === currentStep ? '0 0 10px rgba(0,251,251,0.75)' : 'none',
-                  transition: 'width 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
+                  transform: i === currentStep ? 'scaleX(1)' : 'scaleX(0.3)',
+                  transformOrigin: 'center',
+                  transition: 'transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
                 }}
               />
               <span
-                className="overflow-hidden whitespace-nowrap transition-all duration-300"
+                className="whitespace-nowrap overflow-hidden"
                 style={{
-                  maxWidth: i === currentStep ? '80px' : '0px',
+                  width: i === currentStep ? 'auto' : '0',
                   opacity: i === currentStep ? 1 : 0,
                   color: 'var(--cyan)',
                   fontFamily: 'DM Mono, monospace',
@@ -196,7 +198,7 @@ export default function Timeline3D() {
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  transition: 'max-width 0.3s ease, opacity 0.3s ease',
+                  transition: 'opacity 0.3s ease',
                 }}
               >
                 {step.day}

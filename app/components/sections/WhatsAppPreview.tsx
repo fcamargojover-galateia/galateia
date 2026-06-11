@@ -18,14 +18,16 @@ const MESSAGES: Message[] = [
   { id: 6, from: 'bot',     text: '✅ Turno confirmado!\nMiérc 14 · 10:00 hs · Dra. Martínez\nTe enviamos recordatorio 24hs antes. 🗓️', time: '14:04' },
 ];
 
-// ms que tarda en aparecer cada mensaje después del anterior
 const DELAYS = [0, 1400, 2800, 4200, 5800, 7200];
-const TOTAL_CYCLE = 11000; // ms antes de resetear
+const TOTAL_CYCLE = 11000;
 
 export default function WhatsAppPreview() {
   const [visible, setVisible] = useState<number[]>([]);
-  const [typing, setTyping] = useState(false);
-  const timerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [typing, setTyping]   = useState(false);
+  const timerRefs       = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const containerRef    = useRef<HTMLDivElement>(null);
+  const inViewRef       = useRef(true);
+  const pendingRef      = useRef(false);
 
   const clearTimers = () => timerRefs.current.forEach(clearTimeout);
 
@@ -36,13 +38,10 @@ export default function WhatsAppPreview() {
     timerRefs.current = [];
 
     MESSAGES.forEach((msg, i) => {
-      const showTyping = msg.from === 'bot';
-
-      if (showTyping) {
+      if (msg.from === 'bot') {
         const t1 = setTimeout(() => setTyping(true), DELAYS[i] - 700);
         timerRefs.current.push(t1);
       }
-
       const t2 = setTimeout(() => {
         setTyping(false);
         setVisible(prev => [...prev, msg.id]);
@@ -50,27 +49,62 @@ export default function WhatsAppPreview() {
       timerRefs.current.push(t2);
     });
 
-    // Reset loop
-    const tReset = setTimeout(runSequence, TOTAL_CYCLE);
+    // R9 — only reschedule if still in viewport
+    const tReset = setTimeout(() => {
+      if (inViewRef.current) {
+        runSequence();
+      } else {
+        pendingRef.current = true;
+      }
+    }, TOTAL_CYCLE);
     timerRefs.current.push(tReset);
   };
 
   useEffect(() => {
+    // R2 — if reduced motion: show all messages statically, no loop
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      setVisible(MESSAGES.map(m => m.id));
+      return;
+    }
+
+    // R9 — IntersectionObserver to pause loop when off-screen
+    const el = containerRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting;
+        if (entry.isIntersecting && pendingRef.current) {
+          pendingRef.current = false;
+          runSequence();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (el) observer.observe(el);
+
     runSequence();
-    return clearTimers;
+
+    return () => {
+      clearTimers();
+      observer.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '320px',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      boxShadow: '0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
-      fontFamily: 'DM Sans, sans-serif',
-      background: '#0B1014',
-    }}>
+    // R3 — aria-hidden: componente ilustrativo, no contenido real para screen readers
+    <div
+      ref={containerRef}
+      aria-hidden="true"
+      style={{
+        width: '100%',
+        maxWidth: '320px',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
+        fontFamily: 'DM Sans, sans-serif',
+        background: '#0B1014',
+      }}>
       {/* Header */}
       <div style={{
         background: '#1F2C33',
@@ -80,7 +114,6 @@ export default function WhatsAppPreview() {
         gap: '10px',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
-        {/* Avatar */}
         <div style={{
           width: '38px', height: '38px', borderRadius: '50%',
           background: 'linear-gradient(135deg, #00FBFB 0%, #00a8a8 100%)',
@@ -91,7 +124,6 @@ export default function WhatsAppPreview() {
           <div style={{ color: '#E9EDEF', fontSize: '14px', fontWeight: 600 }}>Galia IA</div>
           <div style={{ color: '#8696A0', fontSize: '11px' }}>Clínica Médica · en línea</div>
         </div>
-        {/* Iconos decorativos */}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '16px', color: '#8696A0' }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.9 14.3H15l-.3-.3c1-1.1 1.6-2.7 1.6-4.3 0-3.7-3-6.7-6.7-6.7S2.9 6 2.9 9.7s3 6.7 6.7 6.7c1.6 0 3.2-.6 4.3-1.6l.3.3v.8l5.1 5.1 1.5-1.5-4.9-5.2zm-6.2 0C7.1 14.3 4 11.2 4 7.4s3.1-6.9 5.7-6.9 5.7 3.1 5.7 6.9-2.5 6.9-6 6.9z"/></svg>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
@@ -108,7 +140,6 @@ export default function WhatsAppPreview() {
         gap: '4px',
         position: 'relative',
       }}>
-        {/* Fecha */}
         <div style={{
           textAlign: 'center', fontSize: '11px', color: '#8696A0',
           background: 'rgba(255,255,255,0.05)', borderRadius: '8px',
@@ -118,7 +149,6 @@ export default function WhatsAppPreview() {
         {MESSAGES.map((msg) => {
           const isVisible = visible.includes(msg.id);
           const isBot = msg.from === 'bot';
-
           return (
             <div
               key={msg.id}
@@ -137,21 +167,10 @@ export default function WhatsAppPreview() {
                 background: isBot ? '#1F2C33' : '#005C4B',
                 position: 'relative',
               }}>
-                <div style={{
-                  color: '#E9EDEF',
-                  fontSize: '13px',
-                  lineHeight: '1.45',
-                  whiteSpace: 'pre-line',
-                }}>
+                <div style={{ color: '#E9EDEF', fontSize: '13px', lineHeight: '1.45', whiteSpace: 'pre-line' }}>
                   {msg.text}
                 </div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  gap: '3px',
-                  marginTop: '3px',
-                }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '3px', marginTop: '3px' }}>
                   <span style={{ color: '#8696A0', fontSize: '10px' }}>{msg.time}</span>
                   {!isBot && (
                     <svg width="14" height="10" viewBox="0 0 16 11" fill="#53BDEB">
@@ -165,7 +184,7 @@ export default function WhatsAppPreview() {
           );
         })}
 
-        {/* Typing indicator */}
+        {/* Typing indicator — R2: animation handled via .typing-dot CSS class in globals.css */}
         {typing && (
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <div style={{
@@ -175,11 +194,15 @@ export default function WhatsAppPreview() {
               display: 'flex', gap: '4px', alignItems: 'center',
             }}>
               {[0, 1, 2].map(i => (
-                <div key={i} style={{
-                  width: '6px', height: '6px', borderRadius: '50%',
-                  background: '#8696A0',
-                  animation: `typingDot 1.2s ease-in-out ${i * 0.2}s infinite`,
-                }} />
+                <div
+                  key={i}
+                  className="typing-dot"
+                  style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: '#8696A0',
+                    animationDelay: `${i * 0.2}s`,
+                  }}
+                />
               ))}
             </div>
           </div>
@@ -211,13 +234,6 @@ export default function WhatsAppPreview() {
           </svg>
         </div>
       </div>
-
-      <style>{`
-        @keyframes typingDot {
-          0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-          30% { transform: translateY(-4px); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }

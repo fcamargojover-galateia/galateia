@@ -14,7 +14,7 @@ export default function Calculator() {
   const costoAnual    = costoMensual * 12;
 
   return (
-    <section ref={ref} className="relative min-h-screen py-24 px-8 flex items-center justify-center bg-dark overflow-hidden">
+    <section ref={ref} className="relative min-h-dvh py-24 px-8 flex items-center justify-center bg-dark overflow-hidden">
       {/* Gradiente rojo/oscuro esquina superior derecha */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -35,8 +35,9 @@ export default function Calculator() {
           {/* Slider 1 */}
           <div data-animate="fade-up" className="space-y-6">
             <div>
-              <label className="block text-sm text-gray-400 mb-4 font-semibold">Citas mensuales</label>
+              <label htmlFor="citas" className="block text-sm text-gray-400 mb-4 font-semibold">Citas mensuales</label>
               <input
+                id="citas"
                 type="range" min="10" max="500" step="10"
                 value={citasUBI}
                 onChange={(e) => setCitasUBI(Number(e.target.value))}
@@ -49,8 +50,9 @@ export default function Calculator() {
           {/* Slider 2 */}
           <div data-animate="fade-up" className="anim-d150 space-y-6">
             <div>
-              <label className="block text-sm text-gray-400 mb-4 font-semibold">% No-shows</label>
+              <label htmlFor="noshows" className="block text-sm text-gray-400 mb-4 font-semibold">% No-shows</label>
               <input
+                id="noshows"
                 type="range" min="1" max="50" step="1"
                 value={noShowRate}
                 onChange={(e) => setNoShowRate(Number(e.target.value))}
@@ -63,8 +65,9 @@ export default function Calculator() {
           {/* Slider 3 */}
           <div data-animate="fade-up" className="anim-d300 space-y-6">
             <div>
-              <label className="block text-sm text-gray-400 mb-4 font-semibold">Valor USD/consulta</label>
+              <label htmlFor="valor" className="block text-sm text-gray-400 mb-4 font-semibold">Valor USD/consulta</label>
               <input
+                id="valor"
                 type="range" min="30" max="500" step="10"
                 value={valorConsulta}
                 onChange={(e) => setValorConsulta(Number(e.target.value))}

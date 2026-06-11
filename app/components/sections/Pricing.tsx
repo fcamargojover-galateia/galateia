@@ -1,5 +1,6 @@
 'use client';
 
+import { Star } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function Pricing() {
@@ -25,19 +26,19 @@ export default function Pricing() {
             <div className="space-y-4 text-gray-400">
               <div className="flex justify-between">
                 <span>No-shows sin recuperar</span>
-                <span style={{ color: '#ff6b6b' }}>~$1,200/mes</span>
+                <span style={{ color: 'var(--red)' }}>~$1,200/mes</span>
               </div>
               <div className="flex justify-between">
                 <span>Tiempo administrativo perdido</span>
-                <span style={{ color: '#ff6b6b' }}>~$800/mes</span>
+                <span style={{ color: 'var(--red)' }}>~$800/mes</span>
               </div>
               <div className="flex justify-between">
                 <span>Fricción en recepción</span>
-                <span style={{ color: '#ff6b6b' }}>~$500/mes</span>
+                <span style={{ color: 'var(--red)' }}>~$500/mes</span>
               </div>
               <div className="pt-6 border-t border-gray-700 flex justify-between font-bold text-white">
                 <span>Pérdida mensual estimada</span>
-                <span style={{ color: '#ff6b6b' }}>~$2,500/mes</span>
+                <span style={{ color: 'var(--red)' }}>~$2,500/mes</span>
               </div>
             </div>
           </div>
@@ -50,13 +51,14 @@ export default function Pricing() {
             <div
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '6px',
-                background: 'linear-gradient(135deg, #00FBFB 0%, #00c8c8 100%)',
-                color: '#1A1A1D', padding: '5px 14px', borderRadius: '20px',
+                background: 'linear-gradient(135deg, var(--cyan) 0%, #00c8c8 100%)',
+                color: 'var(--dark)', padding: '5px 14px', borderRadius: '20px',
                 fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em',
                 marginBottom: '16px', boxShadow: '0 0 16px rgba(0,251,251,0.4)',
               }}
             >
-              ★ RECOMENDADO
+              <Star size={11} strokeWidth={2.5} />
+              RECOMENDADO
             </div>
             <h3 className="text-2xl font-bold mb-6">Con GalateIA</h3>
             <div className="space-y-4">
@@ -87,7 +89,7 @@ export default function Pricing() {
               <div className="pt-2">
                 <button
                   aria-label="Agendar diagnóstico gratuito"
-                  className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white transition mt-2 cursor-pointer"
+                  className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white active:scale-95 transition-all mt-2 cursor-pointer"
                 >
                   Agendar Diagnóstico Gratuito
                 </button>

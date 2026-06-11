@@ -20,7 +20,11 @@ function MetricCard({
       data-animate="fade-up"
       className={`${delay} card-hover text-center p-8 rounded-lg border border-gray-700 bg-gray-900/50`}
     >
-      <div className={`text-5xl font-bold mb-3 ${color} ${done ? 'number-glow' : ''}`}>
+      <div
+        className={`text-5xl font-bold mb-3 ${color} ${done ? 'number-glow' : ''}`}
+        aria-live={done ? 'polite' : 'off'}
+        aria-atomic="true"
+      >
         {prefix}{count}{suffix}
       </div>
       <div className="text-gray-400">{label}</div>

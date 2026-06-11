@@ -175,6 +175,24 @@ section h2 { letter-spacing: 0.035em; }
   border-top: 1px solid rgba(0, 251, 251, 0.1);
 }
 
+/* ─── Focus rings (R1) ─────────────────────────────────────── */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── WhatsApp typing dots (R2) ────────────────────────────── */
+.typing-dot {
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-animate] {
     opacity: 1 !important;
@@ -183,4 +201,5 @@ section h2 { letter-spacing: 0.035em; }
   }
   .glow-cyan-pulse,
   .radial-pulse { animation: none !important; }
+  .typing-dot   { animation: none !important; opacity: 0.6; }
 }

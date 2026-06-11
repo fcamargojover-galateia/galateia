@@ -4,7 +4,7 @@ import WhatsAppPreview from './WhatsAppPreview';
 
 export default function Hero() {
   return (
-    <section id="hero" className="relative min-h-screen pt-24 pb-16 px-8 flex items-center overflow-hidden">
+    <section id="hero" className="relative min-h-dvh pt-24 pb-16 px-8 flex items-center overflow-hidden">
       <div className="max-w-6xl mx-auto w-full">
 
         {/* Layout dos columnas */}
@@ -23,7 +23,7 @@ export default function Hero() {
 
             <button
               aria-label="Agendar diagnóstico operativo"
-              className="px-8 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white transition text-lg cursor-pointer"
+              className="px-8 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white active:scale-95 transition-all text-lg cursor-pointer"
             >
               Diagnóstico Operativo (15 min)
             </button>
