@@ -35,6 +35,9 @@ const STEPS = [
 // Scroll progress threshold where each step becomes "active"
 const STEP_THRESHOLDS = [0.10, 0.35, 0.60, 0.85];
 
+// Midpoint of each step's static phase — used for click navigation
+const STEP_TARGETS = [0.10, 0.37, 0.60, 0.86];
+
 export default function Timeline3D() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -80,6 +83,17 @@ export default function Timeline3D() {
   // P8 — current active step for progress dots
   const activeStep = STEP_THRESHOLDS.findIndex((t) => scrollProgress < t);
   const currentStep = activeStep === -1 ? 3 : activeStep;
+
+  const handleStepClick = (stepIndex: number) => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+    const vh = window.innerHeight;
+    const startScroll = sectionTop - 0.8 * vh;
+    const endScroll   = sectionTop + section.offsetHeight - vh;
+    const target = startScroll + STEP_TARGETS[stepIndex] * (endScroll - startScroll);
+    window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+  };
 
   // P1 — static accessible fallback for reduced-motion users
   if (reducedMotion) {
@@ -133,25 +147,63 @@ export default function Timeline3D() {
       <div className="sticky top-0 h-screen w-full">
         <TimelineCanvas scrollProgress={scrollProgress} />
 
-        {/* P8 — step progress indicator */}
-        <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10"
-          aria-hidden="true"
+        {/* P8 — step progress indicator (interactive) */}
+        <nav
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center"
+          aria-label="Pasos del proceso de implementación"
+          style={{
+            background: 'rgba(8, 8, 10, 0.72)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+            borderRadius: '999px',
+            padding: '6px 8px',
+          }}
         >
-          {STEPS.map((_, i) => (
-            <div
+          {STEPS.map((step, i) => (
+            <button
               key={i}
-              className="transition-all duration-300"
+              onClick={() => handleStepClick(i)}
+              aria-label={`Ir a ${step.day}: ${step.title}`}
+              aria-current={i === currentStep ? 'step' : undefined}
+              className="cursor-pointer flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan rounded-full"
               style={{
-                width: i === currentStep ? '24px' : '8px',
-                height: '8px',
-                borderRadius: '4px',
-                background:
-                  i === currentStep ? 'var(--cyan)' : 'rgba(255,255,255,0.25)',
+                background: 'none',
+                border: 'none',
+                padding: '5px 10px',
+                gap: '7px',
               }}
-            />
+            >
+              <div
+                className="transition-all duration-300 shrink-0"
+                style={{
+                  width: i === currentStep ? '20px' : '6px',
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: i === currentStep ? 'var(--cyan)' : 'rgba(255,255,255,0.3)',
+                  boxShadow: i === currentStep ? '0 0 10px rgba(0,251,251,0.75)' : 'none',
+                  transition: 'width 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
+                }}
+              />
+              <span
+                className="overflow-hidden whitespace-nowrap transition-all duration-300"
+                style={{
+                  maxWidth: i === currentStep ? '80px' : '0px',
+                  opacity: i === currentStep ? 1 : 0,
+                  color: 'var(--cyan)',
+                  fontFamily: 'DM Mono, monospace',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  transition: 'max-width 0.3s ease, opacity 0.3s ease',
+                }}
+              >
+                {step.day}
+              </span>
+            </button>
           ))}
-        </div>
+        </nav>
       </div>
 
       {/* Spacer for scroll height */}
