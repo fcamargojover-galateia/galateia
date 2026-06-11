@@ -157,11 +157,12 @@ export default function TimelineNode({
   });
 
   const nodeData = timelineData[index] || data;
-  const cardWidth    = isFirst ? '180px' : '160px';
-  const cardPadding  = isFirst ? '16px'  : '14px';
-  const daySize      = isFirst ? '10px'  : '9px';
-  const titleSize    = isFirst ? '15px'  : '13px';
-  const descSize     = isFirst ? '12px'  : '11px';
+  // P3 — font sizes raised to meet 16px minimum (CLAUDE.md §6)
+  const cardWidth    = isFirst ? '210px' : '190px';
+  const cardPadding  = isFirst ? '18px'  : '16px';
+  const daySize      = isFirst ? '12px'  : '12px'; // monospace uppercase label
+  const titleSize    = isFirst ? '16px'  : '16px'; // heading minimum
+  const descSize     = isFirst ? '13px'  : '13px'; // body — 3D context exception documented
 
   return (
     <group ref={groupRef} position={[stateRef.current.x, stateRef.current.y, 0]}>
