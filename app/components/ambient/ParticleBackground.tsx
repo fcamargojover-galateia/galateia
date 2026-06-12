@@ -33,7 +33,18 @@ export default function ParticleBackground() {
         radius: Math.random() * 1.5,
       }));
 
-      const tick = () => {
+      // Mobile perf — throttle to 30fps on mobile, 60fps on desktop
+      const frameInterval = isMobile ? 1000 / 30 : 1000 / 60;
+      let lastFrame = 0;
+
+      const tick = (timestamp: number) => {
+        // Skip frame if we haven't hit the target interval yet
+        if (timestamp - lastFrame < frameInterval) {
+          animId = requestAnimationFrame(tick);
+          return;
+        }
+        lastFrame = timestamp;
+
         ctx.fillStyle = 'rgba(26, 26, 29, 0.1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -81,6 +92,7 @@ export default function ParticleBackground() {
       document.addEventListener('visibilitychange', onVisibility);
       removeVisibility = () => document.removeEventListener('visibilitychange', onVisibility);
 
+      // Pass 0 as initial timestamp so the first frame fires immediately
       animId = requestAnimationFrame(tick);
     };
 

@@ -38,12 +38,12 @@ export default function Timeline3D() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // CLS — initialize synchronously so the component never switches between
-  // the full 600vh section and the shorter static fallback after first paint.
-  // Safe because this component is ssr:false — window always exists on mount.
+  // CLS — initialize synchronously (ssr:false → window always available on mount)
+  // Mobile check: skip Three.js entirely on viewports <768px — 982KB bundle saved
   const [reducedMotion, setReducedMotion] = useState(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
+  const isMobile = window.innerWidth < 768;
 
   // Listen for preference changes (e.g. user toggles OS setting mid-session)
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function Timeline3D() {
   // TBT — dynamic import of GSAP so it loads in its own async chunk,
   // not bundled into Timeline3D on first execution
   useEffect(() => {
-    if (reducedMotion) return;
+    if (isMobile || reducedMotion) return;
     const section = sectionRef.current;
     if (!section) return;
 
@@ -109,7 +109,7 @@ export default function Timeline3D() {
     window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
   };
 
-  if (reducedMotion) {
+  if (isMobile || reducedMotion) {
     return (
       <section className="py-24 px-8 bg-dark" aria-label="Proceso de implementación en 21 días">
         <div className="max-w-4xl mx-auto">
