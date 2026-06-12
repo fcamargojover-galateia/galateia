@@ -9,88 +9,118 @@ export default function ParticleBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    let animId = 0;
+    // listeners registered inside startAnimation — stored for cleanup
+    let removeVisibility = () => {};
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const startAnimation = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    // Partículas
-    const particles: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-    }> = [];
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-    const particleCount = 50;
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+      // CLS-3 — reduce particles on mobile to cut CPU work in half
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const count    = isMobile ? 25 : 50;
+
+      type Particle = { x: number; y: number; vx: number; vy: number; radius: number };
+      const particles: Particle[] = Array.from({ length: count }, () => ({
+        x:      Math.random() * canvas.width,
+        y:      Math.random() * canvas.height,
+        vx:     (Math.random() - 0.5) * 0.5,
+        vy:     (Math.random() - 0.5) * 0.5,
         radius: Math.random() * 1.5,
-      });
-    }
+      }));
 
-    const animate = () => {
-      ctx.fillStyle = 'rgba(26, 26, 29, 0.1)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const tick = () => {
+        ctx.fillStyle = 'rgba(26, 26, 29, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = canvas.width;
+          else if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          else if (p.y > canvas.height) p.y = 0;
 
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+          ctx.fillStyle = 'rgba(0, 251, 251, 0.4)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-        ctx.fillStyle = 'rgba(0, 251, 251, 0.4)';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Líneas entre partículas cercanas
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 150) {
-            ctx.strokeStyle = `rgba(0, 251, 251, ${0.2 * (1 - dist / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const d  = Math.sqrt(dx * dx + dy * dy);
+            if (d < 150) {
+              ctx.strokeStyle = `rgba(0,251,251,${0.2 * (1 - d / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
           }
         }
-      }
 
-      requestAnimationFrame(animate);
+        animId = requestAnimationFrame(tick);
+      };
+
+      // CLS-3 — pause rAF when tab is hidden to avoid wasted GPU work
+      const onVisibility = () => {
+        if (document.hidden) {
+          cancelAnimationFrame(animId);
+        } else {
+          animId = requestAnimationFrame(tick);
+        }
+      };
+      document.addEventListener('visibilitychange', onVisibility);
+      removeVisibility = () => document.removeEventListener('visibilitychange', onVisibility);
+
+      animId = requestAnimationFrame(tick);
     };
 
-    animate();
+    // TBT — defer init to idle time so it doesn't block the main thread on load
+    type RIC = typeof window extends { requestIdleCallback: infer F } ? F : never;
+    const ric = (window as unknown as { requestIdleCallback?: RIC }).requestIdleCallback;
+    let cancelDefer = () => {};
 
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
+    if (ric) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const id = (ric as any)(startAnimation, { timeout: 2000 }) as number;
+      cancelDefer = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).cancelIdleCallback?.(id);
+      };
+    } else {
+      const id = setTimeout(startAnimation, 200);
+      cancelDefer = () => clearTimeout(id);
+    }
+
+    const onResize = () => {
+      canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+    window.addEventListener('resize', onResize);
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      cancelAnimationFrame(animId);
+      cancelDefer();
+      removeVisibility();
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
-      style={{ background: 'transparent' }}
+      className="fixed top-0 left-0 pointer-events-none z-0"
+      // CLS — explicit CSS dimensions prevent layout recalculation from default 300×150 canvas size
+      style={{ background: 'transparent', width: '100vw', height: '100vh' }}
     />
   );
 }

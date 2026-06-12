@@ -2,10 +2,9 @@
 
 import { useRef, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger);
+// TBT — GSAP loaded dynamically inside the effect, not at module parse time
+// This keeps the Timeline3D chunk ~50kB lighter and defers ScrollTrigger init
 
 const TimelineCanvas = dynamic(() => import('@components/3d/TimelineCanvas'), { ssr: false });
 
@@ -32,70 +31,84 @@ const STEPS = [
   },
 ];
 
-// Scroll progress threshold where each step becomes "active"
 const STEP_THRESHOLDS = [0.10, 0.35, 0.60, 0.85];
-
-// Midpoint of each step's static phase — used for click navigation
-const STEP_TARGETS = [0.10, 0.37, 0.60, 0.86];
+const STEP_TARGETS    = [0.10, 0.37, 0.60, 0.86];
 
 export default function Timeline3D() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
-  // P1 — detect prefers-reduced-motion
+  // CLS — initialize synchronously so the component never switches between
+  // the full 600vh section and the shorter static fallback after first paint.
+  // Safe because this component is ssr:false — window always exists on mount.
+  const [reducedMotion, setReducedMotion] = useState(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+
+  // Listen for preference changes (e.g. user toggles OS setting mid-session)
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(mq.matches);
+    const mq      = window.matchMedia('(prefers-reduced-motion: reduce)');
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // Skip GSAP entirely when reduced motion is active
+  // TBT — dynamic import of GSAP so it loads in its own async chunk,
+  // not bundled into Timeline3D on first execution
   useEffect(() => {
     if (reducedMotion) return;
-
     const section = sectionRef.current;
     if (!section) return;
 
-    const tl = gsap.to(
-      { progress: 0 },
-      {
-        progress: 1,
-        duration: 1,
-        scrollTrigger: {
-          trigger: section,
-          start: 'top 80%',
-          end: 'bottom bottom',
-          scrub: true,
-          onUpdate: (self) => setScrollProgress(self.progress),
-        },
-      }
-    );
+    let isMounted = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cleanup: { tl: any; ST: any } = { tl: null, ST: null };
+
+    Promise.all([
+      import('gsap').then(m => m.default),
+      import('gsap/ScrollTrigger').then(m => m.ScrollTrigger),
+    ]).then(([gsap, ScrollTrigger]) => {
+      if (!isMounted || !sectionRef.current) return;
+      gsap.registerPlugin(ScrollTrigger);
+      cleanup.ST = ScrollTrigger;
+
+      cleanup.tl = gsap.to(
+        { progress: 0 },
+        {
+          progress: 1,
+          duration: 1,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 80%',
+            end: 'bottom bottom',
+            scrub: true,
+            onUpdate: (self) => setScrollProgress(self.progress),
+          },
+        }
+      );
+    });
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      tl.kill();
+      isMounted = false;
+      cleanup.ST?.getAll().forEach((t: { kill: () => void }) => t.kill());
+      cleanup.tl?.kill();
     };
   }, [reducedMotion]);
 
-  // P8 — current active step for progress dots
-  const activeStep = STEP_THRESHOLDS.findIndex((t) => scrollProgress < t);
+  const activeStep  = STEP_THRESHOLDS.findIndex((t) => scrollProgress < t);
   const currentStep = activeStep === -1 ? 3 : activeStep;
 
   const handleStepClick = (stepIndex: number) => {
     const section = sectionRef.current;
     if (!section) return;
-    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-    const vh = window.innerHeight;
+    const sectionTop  = section.getBoundingClientRect().top + window.scrollY;
+    const vh          = window.innerHeight;
     const startScroll = sectionTop - 0.8 * vh;
     const endScroll   = sectionTop + section.offsetHeight - vh;
-    const target = startScroll + STEP_TARGETS[stepIndex] * (endScroll - startScroll);
+    const target      = startScroll + STEP_TARGETS[stepIndex] * (endScroll - startScroll);
     window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
   };
 
-  // P1 — static accessible fallback for reduced-motion users
   if (reducedMotion) {
     return (
       <section className="py-24 px-8 bg-dark" aria-label="Proceso de implementación en 21 días">
@@ -126,12 +139,14 @@ export default function Timeline3D() {
   }
 
   return (
+    // CLS — explicit inline height guarantees the section occupies 600vh before and after JS loads,
+    // matching the loading skeleton in page.tsx exactly
     <section
       ref={sectionRef}
-      className="relative w-full h-[600vh]"
+      className="relative w-full"
+      style={{ height: '600vh' }}
       aria-label="Proceso de implementación en 21 días"
     >
-      {/* P2 — accessible content for screen readers (visually hidden) */}
       <div className="sr-only">
         <h2>Proceso de implementación en 21 días</h2>
         <ol>
@@ -143,11 +158,9 @@ export default function Timeline3D() {
         </ol>
       </div>
 
-      {/* Canvas 3D sticky */}
       <div className="sticky top-0 h-screen w-full">
         <TimelineCanvas scrollProgress={scrollProgress} />
 
-        {/* P8 — step progress indicator (desktop only, R5) */}
         <nav
           className="hidden sm:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-10 items-center"
           aria-label="Pasos del proceso de implementación"
@@ -167,12 +180,7 @@ export default function Timeline3D() {
               aria-label={`Ir a ${step.day}: ${step.title}`}
               aria-current={i === currentStep ? 'step' : undefined}
               className="cursor-pointer flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan rounded-full"
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '5px 10px',
-                gap: '7px',
-              }}
+              style={{ background: 'none', border: 'none', padding: '5px 10px', gap: '7px' }}
             >
               <div
                 className="shrink-0"
@@ -208,7 +216,6 @@ export default function Timeline3D() {
         </nav>
       </div>
 
-      {/* Spacer for scroll height */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none" />
     </section>
   );
