@@ -114,20 +114,20 @@ export default function Timeline3D() {
       <section className="py-24 px-8 bg-dark" aria-label="Proceso de implementación en 21 días">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold">Implementación en 21 días</h2>
+            <h2 className="text-3xl sm:text-5xl font-bold">Implementación en 21 días</h2>
             <p className="text-gray-400 mt-4">Sin interrumpir tu operación</p>
           </div>
           <ol className="space-y-10">
             {STEPS.map((step, i) => (
-              <li key={i} className="flex gap-8 items-start">
+              <li key={i} className="flex flex-col sm:flex-row sm:gap-8 sm:items-start">
                 <div
-                  className="font-mono font-bold text-sm uppercase tracking-widest shrink-0 pt-1"
-                  style={{ color: 'var(--cyan)', width: '96px' }}
+                  className="font-mono font-bold text-sm uppercase tracking-widest mb-2 sm:mb-0 sm:shrink-0 sm:pt-1"
+                  style={{ color: 'var(--cyan)', minWidth: '96px' }}
                 >
                   {step.day}
                 </div>
-                <div className="border-l border-gray-700 pl-8">
-                  <h3 className="font-bold text-xl mb-2">{step.title}</h3>
+                <div className="border-l border-gray-700 pl-6">
+                  <h3 className="font-bold text-lg sm:text-xl mb-2">{step.title}</h3>
                   <p className="text-gray-400 leading-relaxed">{step.desc}</p>
                 </div>
               </li>

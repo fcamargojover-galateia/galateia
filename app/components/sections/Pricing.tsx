@@ -13,7 +13,7 @@ export default function Pricing() {
       <div className="max-w-6xl mx-auto">
 
         <div data-animate="fade-up" className="text-center mb-4">
-          <h2 className="text-5xl font-bold">Inversión</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold">Inversión</h2>
         </div>
         <div data-animate="fade-up" className="anim-d100 text-center mb-16">
           <p className="text-gray-400">Setup único + retorno mensual desde el primer mes</p>

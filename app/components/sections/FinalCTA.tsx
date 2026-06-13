@@ -29,7 +29,7 @@ export default function FinalCTA() {
       <div className="relative max-w-4xl mx-auto text-center">
 
         <div data-animate="fade-up-lg">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-6">
             15 minutos para saber exactamente cuánto perdés.
           </h2>
         </div>

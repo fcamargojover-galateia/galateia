@@ -25,7 +25,7 @@ export default function Calculator() {
       <div className="relative max-w-5xl mx-auto w-full">
 
         <div data-animate="fade-up" className="text-center mb-4">
-          <h2 className="text-5xl font-bold">¿Cuánto te cuesta?</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold">¿Cuánto te cuesta?</h2>
         </div>
         <div data-animate="fade-up" className="anim-d100 text-center mb-16">
           <p className="text-gray-400">Calculá el impacto de los no-shows en tu clínica</p>

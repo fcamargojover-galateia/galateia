@@ -27,7 +27,7 @@ export default function FAQ() {
       <div className="max-w-3xl mx-auto">
 
         <div data-animate="fade-up" className="text-center mb-4">
-          <h2 className="text-5xl font-bold">Preguntas Frecuentes</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold">Preguntas Frecuentes</h2>
         </div>
         <div data-animate="fade-up" className="anim-d100 text-center mb-16">
           <p className="text-gray-400">Todo lo que necesitas saber</p>
