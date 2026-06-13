@@ -24,11 +24,6 @@ html {
   color-scheme: dark;
 }
 
-/* overflow-x en html + body: iOS Safari ignora el body-level clip sin html */
-html {
-  overflow-x: hidden;
-}
-
 body {
   background: var(--dark);
   color: var(--white);

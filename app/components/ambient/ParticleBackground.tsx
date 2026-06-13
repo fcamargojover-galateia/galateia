@@ -132,7 +132,7 @@ export default function ParticleBackground() {
       ref={canvasRef}
       className="fixed top-0 left-0 pointer-events-none z-0"
       // CLS — explicit CSS dimensions prevent layout recalculation from default 300×150 canvas size
-      style={{ background: 'transparent', width: '100%', height: '100%' }}
+      style={{ background: 'transparent', width: '100vw', height: '100vh' }}
     />
   );
 }
