@@ -12,7 +12,7 @@ export default function Hero() {
 
           {/* Columna izquierda: copy */}
           <div className="flex-1 text-center lg:text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 text-white leading-tight">
               Perdés cuando no vienen. Perdés más cuando no los buscás después.{' '}
               <span className="text-cyan">GalateIA recupera los dos.</span>
             </h1>

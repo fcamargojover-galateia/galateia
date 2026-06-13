@@ -5,7 +5,7 @@ export default function Nav() {
       <div className="hidden sm:flex gap-8 text-sm">
         <a href="#hero" className="hover:text-cyan transition">Inicio</a>
         <a href="#agents" className="hover:text-cyan transition">Agentes</a>
-        <a href="#pricing" className="hover:text-cyan transition">Precios</a>
+        <a href="#pricing" className="hover:text-cyan transition">Inversión</a>
         <a href="#faq" className="hover:text-cyan transition">FAQ</a>
       </div>
       <button

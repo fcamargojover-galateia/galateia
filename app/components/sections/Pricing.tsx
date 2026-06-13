@@ -7,7 +7,7 @@ export default function Pricing() {
   const { ref } = useScrollReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className="py-24 px-8 bg-dark">
+    <section ref={ref} id="pricing" className="py-24 px-8 bg-dark">
       <div className="max-w-6xl mx-auto">
 
         <div data-animate="fade-up" className="text-center mb-4">

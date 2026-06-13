@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect, useState } from 'react';
 import { useScrollReveal, useCounter } from '@/hooks/useScrollReveal';
 
 const METRICS = [
@@ -9,14 +10,31 @@ const METRICS = [
   { prefix: '$', num: 0,  suffix: '',      label: 'Inversión en ads',          color: 'text-cyan',  delay: 'anim-d400' },
 ];
 
-function MetricCard({
-  prefix, num, suffix, label, color, delay, active,
-}: typeof METRICS[0] & { active: boolean }) {
+function MetricCard({ prefix, num, suffix, label, color, delay }: typeof METRICS[0]) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(false);
   const count = useCounter(num, 1400, active);
   const done  = active && count >= num;
 
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setActive(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
+      ref={cardRef}
       data-animate="fade-up"
       className={`${delay} card-hover text-center p-8 rounded-lg border border-gray-700 bg-gray-900/50`}
     >
@@ -33,7 +51,7 @@ function MetricCard({
 }
 
 export default function Social() {
-  const { ref, inView } = useScrollReveal<HTMLElement>();
+  const { ref } = useScrollReveal<HTMLElement>();
 
   return (
     <section ref={ref} className="py-24 px-8 bg-dark">
@@ -42,12 +60,12 @@ export default function Social() {
           <h2 className="text-5xl font-bold">Resultados Comprobados</h2>
         </div>
         <div data-animate="fade-up" className="anim-d100 text-center mb-16">
-          <p className="text-gray-400">Clínicas que usan GalateIA reportan</p>
+          <p className="text-gray-400">Lo que el sistema produce</p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">
           {METRICS.map((m, i) => (
-            <MetricCard key={i} {...m} active={inView} />
+            <MetricCard key={i} {...m} />
           ))}
         </div>
       </div>
