@@ -3,6 +3,8 @@
 import { Zap, Shield, TrendingUp } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
+const CAL_URL = 'https://cal.com/galateia/diagnostico-operativo-15-minutos';
+
 export default function FinalCTA() {
   const { ref } = useScrollReveal<HTMLElement>();
 
@@ -41,6 +43,7 @@ export default function FinalCTA() {
         <div data-animate="fade-up" className="anim-d200 space-y-6">
           <button
             aria-label="Agendar diagnóstico operativo"
+            onClick={() => window.open(CAL_URL, '_blank', 'noopener,noreferrer')}
             className="w-full md:w-auto px-10 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white active:scale-95 transition-all text-lg cursor-pointer"
           >
             Agendar Diagnóstico Operativo

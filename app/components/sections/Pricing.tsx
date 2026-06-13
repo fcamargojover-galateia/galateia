@@ -3,6 +3,8 @@
 import { Star } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
+const CAL_URL = 'https://cal.com/galateia/diagnostico-operativo-15-minutos';
+
 export default function Pricing() {
   const { ref } = useScrollReveal<HTMLElement>();
 
@@ -89,6 +91,7 @@ export default function Pricing() {
               <div className="pt-2">
                 <button
                   aria-label="Agendar diagnóstico gratuito"
+                  onClick={() => window.open(CAL_URL, '_blank', 'noopener,noreferrer')}
                   className="w-full bg-cyan text-dark py-3 rounded font-bold hover:bg-white active:scale-95 transition-all mt-2 cursor-pointer"
                 >
                   Agendar Diagnóstico Gratuito

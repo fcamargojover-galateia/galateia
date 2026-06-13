@@ -1,3 +1,7 @@
+'use client';
+
+const CAL_URL = 'https://cal.com/galateia/diagnostico-operativo-15-minutos';
+
 export default function Nav() {
   return (
     <nav className="fixed top-0 left-0 right-0 h-20 bg-dark/80 backdrop-blur-md border-b border-gray-700 z-50 flex items-center justify-between px-8">
@@ -10,6 +14,7 @@ export default function Nav() {
       </div>
       <button
         aria-label="Agendar diagnóstico operativo"
+        onClick={() => window.open(CAL_URL, '_blank', 'noopener,noreferrer')}
         className="px-6 py-2 bg-cyan text-dark rounded font-semibold hover:bg-white active:scale-95 transition-all cursor-pointer"
       >
         Diagnóstico

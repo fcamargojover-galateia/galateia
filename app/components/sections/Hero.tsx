@@ -2,6 +2,8 @@
 
 import WhatsAppPreview from './WhatsAppPreview';
 
+const CAL_URL = 'https://cal.com/galateia/diagnostico-operativo-15-minutos';
+
 export default function Hero() {
   return (
     <section id="hero" className="relative min-h-dvh pt-24 pb-16 px-8 flex items-center overflow-hidden">
@@ -23,6 +25,7 @@ export default function Hero() {
 
             <button
               aria-label="Agendar diagnóstico operativo"
+              onClick={() => window.open(CAL_URL, '_blank', 'noopener,noreferrer')}
               className="px-8 py-4 bg-cyan text-dark font-bold rounded-lg hover:bg-white active:scale-95 transition-all text-lg cursor-pointer"
             >
               Diagnóstico Operativo (15 min)
