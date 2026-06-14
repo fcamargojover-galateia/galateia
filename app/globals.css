@@ -162,7 +162,12 @@ code, pre {
 .text-gray-500 { color: rgba(255, 255, 255, 0.55) !important; }
 
 /* Letter-spacing premium en títulos de sección */
-section h2 { letter-spacing: 0.035em; }
+section h2 {
+  letter-spacing: 0.035em;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
 
 /* Glow sobre números contadores al terminar */
 .number-glow {
