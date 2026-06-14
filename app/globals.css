@@ -199,6 +199,14 @@ a:focus-visible {
   30%           { transform: translateY(-4px); opacity: 1; }
 }
 
+@media (max-width: 640px) {
+  h1, h2, h3 {
+    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-animate] {
     opacity: 1 !important;

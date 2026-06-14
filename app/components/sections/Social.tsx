@@ -57,10 +57,10 @@ export default function Social() {
     <section ref={ref} className="py-24 px-8 bg-dark">
       <div className="max-w-6xl mx-auto">
         <div data-animate="fade-up" className="text-center mb-4">
-          <h2 className="text-3xl sm:text-5xl font-bold">Resultados Comprobados</h2>
+          <h2 className="text-3xl sm:text-5xl font-bold">Lo que el sistema produce</h2>
         </div>
         <div data-animate="fade-up" className="anim-d100 text-center mb-16">
-          <p className="text-gray-400">Lo que el sistema produce</p>
+          <p className="text-gray-400">Proyecciones basadas en el comportamiento del sistema en clínicas con +100 citas/mes</p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">
